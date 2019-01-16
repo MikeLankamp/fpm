@@ -1,0 +1,26 @@
+language: cpp
+
+sudo: false
+os:
+  - linux
+
+matrix:
+  include:
+    - os: linux
+      compiler: gcc
+      env: CONFIG=Debug
+    - os: linux
+      compiler: gcc
+      env: CONFIG=Release
+    - os: linux
+      compiler: clang
+      env: CONFIG=Debug
+    - os: linux
+      compiler: clang
+      env: CONFIG=Release
+
+script:
+  - set -e
+  - mkdir -p build && cd build
+  - cmake -DCMAKE_BUILD_TYPE=$CONFIG .. && make -j
+  - ctest --output-on-failure

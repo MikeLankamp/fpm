@@ -1,6 +1,9 @@
 # fpm
 Modern C++ header-only fixed-point math library.
 
+[![Build Status](https://travis-ci.org/MikeLankamp/fpm.svg?branch=master)](https://travis-ci.org/MikeLankamp/fpm)
+[![Build status](https://ci.appveyor.com/api/projects/status/0velpwqk38spu412?svg=true)](https://ci.appveyor.com/project/MikeLankamp/fpm)
+
 ## Why use fixed-point math?
 There are several reasons why you can not or choose not to use floating-point math, but still want a similar type:
 * Your target platform lacks an FPU, does not support floating-point operations or its floating-point operations are
