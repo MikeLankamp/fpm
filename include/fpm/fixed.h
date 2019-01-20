@@ -58,6 +58,15 @@ public:
         return m_value;
     }
 
+    // Constructs a fixed-point number from its raw underlying value.
+    // Do not use this unless you know what you're doing.
+    static fixed from_raw_value(BaseType value)
+    {
+        fixed f;
+        f.m_value = value;
+        return f;
+    }
+
     //
     // Arithmetic member operators
     //
@@ -99,13 +108,6 @@ public:
         // We do this by multiplying by two before dividing and adding the LSB to the real result.
         auto value = (m_value * FRACTION_MULT * 2) / y.m_value;
         m_value = (value / 2) + (value % 2);
-        return *this;
-    }
-
-    fixed& operator%=(const fixed& y)
-    {
-        assert(y.m_value != 0);
-        m_value = m_value % y.m_value;
         return *this;
     }
 
@@ -210,28 +212,6 @@ fixed<B, F> operator/(I x, const fixed<B, F>& y)
 }
 
 //
-// Modulo
-//
-
-template <typename B, unsigned int F>
-fixed<B, F> operator%(const fixed<B, F>& x, const fixed<B, F>& y)
-{
-    return fixed<B, F>(x) %= y;
-}
-
-template <typename B, unsigned int F, typename I, typename std::enable_if<std::is_integral<I>::value>::type* = nullptr>
-fixed<B, F> operator%(const fixed<B, F>& x, I y)
-{
-    return fixed<B, F>(x) %= y;
-}
-
-template <typename B, unsigned int F, typename I, typename std::enable_if<std::is_integral<I>::value>::type* = nullptr>
-fixed<B, F> operator%(I x, const fixed<B, F>& y)
-{
-    return fixed<B, F>(x) %= y;
-}
-
-//
 // Comparison operators
 //
 
@@ -272,6 +252,62 @@ bool operator>=(const fixed<B, F>& x, const fixed<B, F>& y)
 }
 
 //
+// Nearest integer operations
+//
+template <typename B, unsigned int F>
+fixed<B, F> ceil(fixed<B, F> x)
+{
+    constexpr auto FRAC = B(1) << F;
+    auto value = x.raw_value();
+    if (value > 0) value += FRAC - 1;
+    return fixed<B, F>::from_raw_value(value / FRAC * FRAC);
+}
+
+template <typename B, unsigned int F>
+fixed<B, F> floor(fixed<B, F> x)
+{
+    constexpr auto FRAC = B(1) << F;
+    auto value = x.raw_value();
+    if (value < 0) value -= FRAC - 1;
+    return fixed<B, F>::from_raw_value(value / FRAC * FRAC);
+}
+
+template <typename B, unsigned int F>
+fixed<B, F> trunc(fixed<B, F> x)
+{
+    constexpr auto FRAC = B(1) << F;
+    return fixed<B, F>::from_raw_value(x.raw_value() / FRAC * FRAC);
+}
+
+template <typename B, unsigned int F>
+fixed<B, F> round(fixed<B, F> x)
+{
+    constexpr auto FRAC = B(1) << F;
+    auto value = x.raw_value() / (FRAC / 2);
+    return fixed<B, F>::from_raw_value(((value / 2) + (value % 2)) * FRAC);
+}
+
+template <typename B, unsigned int F>
+fixed<B, F> nearbyint(fixed<B, F> x)
+{
+    // Rounding mode is assumed to be FE_TONEAREST
+    constexpr auto FRAC = B(1) << F;
+    auto value = x.raw_value();
+    const bool is_half = std::abs(value % FRAC) == FRAC / 2;
+    value /= FRAC / 2;
+    value = (value / 2) + (value % 2);
+    value -= (value % 2) * is_half;
+    return fixed<B, F>::from_raw_value(value * FRAC);
+}
+
+template <typename B, unsigned int F>
+fixed<B, F> rint(fixed<B, F> x)
+{
+    // Rounding mode is assumed to be FE_TONEAREST
+    return nearbyint(x);
+}
+
+//
 // Mathematical functions
 //
 template <typename B, unsigned int F>
@@ -290,7 +326,15 @@ fixed<B, F> copysign(fixed<B, F> x, fixed<C, G> y)
 template <typename B, unsigned int F>
 fixed<B, F> fmod(fixed<B, F> x, fixed<B, F> y)
 {
-    return x % y;
+    assert(y.raw_value() != 0);
+    return fixed<B,F>::from_raw_value(x.raw_value() % y.raw_value());
+}
+
+template <typename B, unsigned int F>
+fixed<B, F> remainder(fixed<B, F> x, fixed<B, F> y)
+{
+    assert(y.raw_value() != 0);
+    return x - nearbyint(x / y) * y;
 }
 
 }

@@ -13,6 +13,7 @@ add_executable(fpm-test
   tests/arithmethic.cpp
   tests/basic_math.cpp
   tests/manip.cpp
+  tests/nearest.cpp
 )
 
 target_link_libraries(fpm-test PRIVATE fpm gtest_main)
