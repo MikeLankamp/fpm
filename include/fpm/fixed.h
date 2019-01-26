@@ -337,6 +337,15 @@ fixed<B, F> remainder(fixed<B, F> x, fixed<B, F> y)
     return x - nearbyint(x / y) * y;
 }
 
+template <typename B, unsigned int F>
+fixed<B, F> remquo(fixed<B, F> x, fixed<B, F> y, int* quo)
+{
+    assert(y.raw_value() != 0);
+    assert(quo != nullptr);
+    *quo = x.raw_value() / y.raw_value();
+    return fixed<B, F>::from_raw_value(x.raw_value() % y.raw_value());
+}
+
 }
 
 #endif
