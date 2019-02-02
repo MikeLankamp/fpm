@@ -1,10 +1,9 @@
 #include "common.h"
-#include <gtest/gtest.h>
 #include <cstdint>
 
 TEST(nearest, round)
 {
-    using P = fpm::fixed<std::int32_t, 8>;
+    using P = fpm::fixed_24_8;
 
     EXPECT_EQ(P( 2), round(P( 2.3)));
     EXPECT_EQ(P( 3), round(P( 2.5)));
@@ -17,7 +16,7 @@ TEST(nearest, round)
 
 TEST(nearest, ceil)
 {
-    using P = fpm::fixed<std::int32_t, 8>;
+    using P = fpm::fixed_24_8;
 
     EXPECT_EQ(P( 1), ceil(P( 1)));
     EXPECT_EQ(P(-1), ceil(P(-1)));
@@ -29,7 +28,7 @@ TEST(nearest, ceil)
 
 TEST(nearest, floor)
 {
-    using P = fpm::fixed<std::int32_t, 8>;
+    using P = fpm::fixed_24_8;
 
     EXPECT_EQ(P( 1), floor(P( 1)));
     EXPECT_EQ(P(-1), floor(P(-1)));
@@ -41,7 +40,7 @@ TEST(nearest, floor)
 
 TEST(nearest, trunc)
 {
-    using P = fpm::fixed<std::int32_t, 8>;
+    using P = fpm::fixed_24_8;
 
     EXPECT_EQ(P( 1), trunc(P( 1)));
     EXPECT_EQ(P(-1), trunc(P(-1)));
@@ -53,7 +52,7 @@ TEST(nearest, trunc)
 
 TEST(nearest, nearbyint)
 {
-    using P = fpm::fixed<std::int32_t, 8>;
+    using P = fpm::fixed_24_8;
 
     EXPECT_EQ(P( 2), nearbyint(P( 2.3)));
     EXPECT_EQ(P( 2), nearbyint(P( 2.5)));
@@ -66,7 +65,7 @@ TEST(nearest, nearbyint)
 
 TEST(nearest, rint)
 {
-    using P = fpm::fixed<std::int32_t, 8>;
+    using P = fpm::fixed_24_8;
 
     EXPECT_EQ(P( 2), rint(P( 2.3)));
     EXPECT_EQ(P( 2), rint(P( 2.5)));

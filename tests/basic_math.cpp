@@ -1,10 +1,9 @@
 #include "common.h"
-#include <gtest/gtest.h>
 #include <cstdint>
 
 TEST(basic_math, abs)
 {
-    using P = fpm::fixed<std::int32_t, 8>;
+    using P = fpm::fixed_24_8;
 
     EXPECT_EQ(P(13.125), abs(P(-13.125)));
     EXPECT_EQ(P(13.125), abs(P(13.125)));
@@ -14,7 +13,7 @@ TEST(basic_math, abs)
 
 TEST(basic_math, fmod)
 {
-    using P = fpm::fixed<std::int32_t, 8>;
+    using P = fpm::fixed_24_8;
 
     EXPECT_EQ(P( 1.5), fmod(P( 9.5), P( 2)));
     EXPECT_EQ(P(-1.5), fmod(P(-9.5), P( 2)));
@@ -24,7 +23,7 @@ TEST(basic_math, fmod)
 
 TEST(basic_math, remainder)
 {
-    using P = fpm::fixed<std::int32_t, 8>;
+    using P = fpm::fixed_24_8;
 
     EXPECT_EQ(P(-0.5), remainder(P( 9.5), P( 2)));
     EXPECT_EQ(P( 0.5), remainder(P(-9.5), P( 2)));
@@ -54,7 +53,7 @@ TEST(basic_math, remquo)
     // remquo must return at least 3 bits of quotient
     constexpr int QUO_MIN_SIZE = 1 << 3;
 
-    using P = fpm::fixed<std::int32_t, 16>;
+    using P = fpm::fixed_16_16;
 
     int quo = 999999;
     EXPECT_EQ(P( 1.5), remquo(P( 9.5), P( 2), &quo));

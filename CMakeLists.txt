@@ -12,8 +12,11 @@ include(GoogleTest)
 add_executable(fpm-test
   tests/arithmethic.cpp
   tests/basic_math.cpp
+  tests/detail.cpp
   tests/manip.cpp
   tests/nearest.cpp
+  tests/power.cpp
+  tests/trigonometry.cpp
 )
 
 target_link_libraries(fpm-test PRIVATE fpm gtest_main)

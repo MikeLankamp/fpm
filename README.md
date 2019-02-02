@@ -18,11 +18,11 @@ then fixed-point numbers might be a solution for you.
 `fpm` defines the `fpm::fixed` class, which is templated on the underlying integer type and the number of bits in the fraction:
 ```c++
 namespace fpm {
-    template <typename BaseType, unsigned int FractionBits>
+    template <typename BaseType, typename IntermediateType, unsigned int FractionBits>
     class fixed;
 }
 ```
-**Note:** It's recommended to use a *signed* integer type for `BaseType` to emulate floating-point numbers 
+**Note:** It's recommended to use a *signed* integer type for `BaseType` (and `IntermediateType`) to emulate floating-point numbers 
 and to allow the compiler to optimize the computations, since overflow and underflow are undefined
 for signed integer types.
 
@@ -30,18 +30,18 @@ To use this class, simply include its header:
 ```c++
 #include <fpm/fixed.h>
 ```
-You may wish to typedef a particular choice of underlying type and fraction bitcount, e.g.:
+You may wish to typedef a particular choice of underlying type, intermediate type and fraction bitcount, e.g.:
 ```c++
-using position = fpm::fixed<std::int32_t, 16>;
+using position = fpm::fixed<std::int32_t, std::int64_t, 16>;
 ```
-This defines a signed 16.16 fixed-point number with a range of -32768 to 65535.999985... and a resolution of 0.0000153...
+This defines a signed 16.16 fixed-point number with a range of -32768 to 65535.999985... and a resolution of 0.0000153... It uses 64-bit integers as intermediate type during calculations to avoid loss of information.
 
 For your convenience, several popular fixed-point formats have been defined in the `fpm` namespace:
 ```c++
 namespace fpm {
-    using fixed_16_16 = fixed<std::int32_t, 16>;  // Q16.16 format
-    using fixed_24_8  = fixed<std::int32_t, 8>;   // Q24.8 format
-    using fixed_8_24  = fixed<std::int32_t, 24>;  // Q8.24 format
+    using fixed_16_16 = fixed<std::int32_t, std::int64_t, 16>;  // Q16.16 format
+    using fixed_24_8  = fixed<std::int32_t, std::int64_t, 8>;   // Q24.8 format
+    using fixed_8_24  = fixed<std::int32_t, std::int64_t, 24>;  // Q8.24 format
 }
 ```
 
