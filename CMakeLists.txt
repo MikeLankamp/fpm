@@ -10,7 +10,7 @@ enable_testing()
 include(GoogleTest)
 
 add_executable(fpm-test
-  tests/arithmethic.cpp
+  tests/arithmetic.cpp
   tests/basic_math.cpp
   tests/detail.cpp
   tests/manip.cpp
@@ -22,4 +22,13 @@ add_executable(fpm-test
 target_link_libraries(fpm-test PRIVATE fpm gtest_main)
 gtest_add_tests(TARGET fpm-test)
 
+
+add_executable(fpm-benchmark
+	benchmarks/arithmetic.cpp
+	benchmarks/power.cpp
+	benchmarks/trigonometry.cpp
+)
+target_link_libraries(fpm-benchmark PRIVATE fpm benchmark benchmark_main)
+
+add_subdirectory(3rdparty/googlebench)
 add_subdirectory(3rdparty/googletest)
