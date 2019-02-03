@@ -52,6 +52,11 @@ TEST(trigonometry, tan)
             EXPECT_TRUE(HasMaximumError(tan_fixed, tan_real, MAX_ERROR_PERC));
         }
     }
+
+#ifndef NDEBUG
+    EXPECT_DEATH(tan(P::PI/2), "");
+    EXPECT_DEATH(tan(-P::PI/2), "");
+#endif
 }
 
 TEST(trigonometry, atan)
@@ -123,5 +128,8 @@ TEST(trigonometry, atan2)
         auto atan2_fixed = static_cast<double>(atan2(P(y), P(x)));
         EXPECT_TRUE(HasMaximumError(atan2_fixed, atan2_real, MAX_ERROR_PERC));
     }
-}
 
+#ifndef NDEBUG
+    EXPECT_DEATH(atan2(P(0), P(0)), "");
+#endif
+}

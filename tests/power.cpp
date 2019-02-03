@@ -24,4 +24,8 @@ TEST(power, sqrt)
         auto sqrt_fixed = static_cast<double>(sqrt(P(value)));
         EXPECT_TRUE(HasMaximumError(sqrt_fixed, sqrt_real, MAX_ERROR_PERC));
     }
+
+#ifndef NDEBUG
+    EXPECT_DEATH(sqrt(P(-1)), "");
+#endif
 }

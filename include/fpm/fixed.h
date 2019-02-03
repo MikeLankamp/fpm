@@ -533,6 +533,7 @@ fixed<B, I, F> atan2(fixed<B, I, F> y, fixed<B, I, F> x)
     using Fixed = fixed<B, I, F>;
     if (x == Fixed(0))
     {
+        assert(y != Fixed(0));
         return (y > Fixed(0)) ? Fixed::HALF_PI : -Fixed::HALF_PI;
     }
     auto ret = atan(y / x);
