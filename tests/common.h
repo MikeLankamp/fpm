@@ -20,7 +20,7 @@ inline ::testing::AssertionResult HasMaximumError(double value, double reference
     auto diff = std::abs(value - reference);
     if (reference < 1e-10 && diff <= max_error)
         return ::testing::AssertionSuccess();
-    if (diff / reference <= max_error)
+    if (std::abs(diff / reference) <= max_error)
         return ::testing::AssertionSuccess();
     return ::testing::AssertionFailure() << value << " is not within " << (max_error * 100) << "% of " << reference;
 }

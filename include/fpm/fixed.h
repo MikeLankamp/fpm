@@ -466,7 +466,15 @@ inline fixed<B, I, F> cos(fixed<B, I, F> x)
 template <typename B, typename I, unsigned int F>
 inline fixed<B, I, F> tan(fixed<B, I, F> x)
 {
-    return sin(x) / cos(x);
+    using Fixed = fixed<B, I, F>;
+
+    auto cx = cos(x);
+
+    // Tangent goes to infinity at 90 and -90 degrees.
+    // We can't represent that with fixed-point maths.
+    assert(cx != Fixed(0));
+
+    return sin(x) / cx;
 }
 
 template <typename B, typename I, unsigned int F>
@@ -500,7 +508,7 @@ fixed<B, I, F> asin(fixed<B, I, F> x)
     const auto yy = Fixed(1) - x * x;
     if (yy == Fixed(0))
     {
-        return Fixed::HALF_PI;
+        return copysign(Fixed::HALF_PI, x);
     }
     return atan(x / sqrt(yy));
 }
@@ -530,8 +538,7 @@ fixed<B, I, F> atan2(fixed<B, I, F> y, fixed<B, I, F> x)
     auto ret = atan(y / x);
     if (x < Fixed(0))
     {
-        ret = Fixed::PI + ret;
-        return (y >= Fixed(0)) ? ret : -ret;
+        return (y >= Fixed(0)) ? ret + Fixed::PI : ret - Fixed::PI;
     }
     return ret;
 }

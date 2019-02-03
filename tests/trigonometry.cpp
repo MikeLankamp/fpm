@@ -8,7 +8,7 @@ TEST(trigonometry, sin)
 
     constexpr auto MAX_ERROR_PERC = 0.025;
 
-    for (int angle = -1800; angle <= 1800; ++angle)
+    for (int angle = -1799; angle <= 1800; ++angle)
     {
         auto flt_angle = angle * PI / 180;
         auto sin_real = std::sin(flt_angle);
@@ -24,7 +24,7 @@ TEST(trigonometry, cos)
 
     constexpr auto MAX_ERROR_PERC = 0.025;
 
-    for (int angle = -1800; angle <= 1800; ++angle)
+    for (int angle = -1799; angle <= 1800; ++angle)
     {
         auto flt_angle = angle * PI / 180;
         auto cos_real = std::cos(flt_angle);
@@ -40,7 +40,7 @@ TEST(trigonometry, tan)
 
     constexpr auto MAX_ERROR_PERC = 0.025;
 
-    for (int angle = -1800; angle <= 1800; ++angle)
+    for (int angle = -1799; angle <= 1800; ++angle)
     {
         // Tangent goes to infinite at 90 and -90 degrees.
         // We can't represent that with fixed-point maths, so don't test for it.
@@ -114,10 +114,10 @@ TEST(trigonometry, atan2)
 
     constexpr auto MAX_ERROR_PERC = 0.025;
 
-    for (int angle = 0; angle <= 360; ++angle)
+    for (int angle = -1799; angle <= 1800; ++angle)
     {
-        const auto y = std::sin(angle * PI / 180);
-        const auto x = std::cos(angle * PI / 180);
+        const auto y = std::sin(angle * PI / 1800);
+        const auto x = std::cos(angle * PI / 1800);
 
         auto atan2_real = std::atan2(y, x);
         auto atan2_fixed = static_cast<double>(atan2(P(y), P(x)));
