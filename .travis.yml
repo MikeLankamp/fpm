@@ -5,6 +5,9 @@ sudo: false
 os:
   - linux
 
+before_install:
+  - sudo apt-get install -y gnuplot
+
 matrix:
   include:
     - os: linux
@@ -25,3 +28,12 @@ script:
   - mkdir -p build && cd build
   - cmake -DCMAKE_BUILD_TYPE=$CONFIG .. && make -j
   - ctest --output-on-failure
+  - make fpm-accuracy-images -j
+
+addons:
+  artifacts:
+    working_dir: build
+    paths:
+    - $(ls accuracy-*.png | tr "\n" ":")
+    target_paths:
+    - fpm
