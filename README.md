@@ -13,7 +13,6 @@ There are several reasons why you can not or choose not to use floating-point ma
 If any of these reasons apply for you, and your problem domain has a clearly outlined range and required resolution,
 then fixed-point numbers might be a solution for you.
 
-
 ## Usage
 `fpm` defines the `fpm::fixed` class, which is templated on the underlying integer type and the number of bits in the fraction:
 ```c++
@@ -45,6 +44,9 @@ namespace fpm {
 }
 ```
 
+## Performance and Accuracy
+Please refer to the pages for [accuracy](docs/accuracy.html) and [performance](docs/performance.html) results.
+
 ## Limitations
 Unlike floating-point numbers, `fpm::fixed`:
 * can not represent NaN, infinity or negative zero.
@@ -53,6 +55,10 @@ Unlike floating-point numbers, `fpm::fixed`:
 
 Notably the last point requires careful use of fixed-point numbers:
 like integers, you must ensure that they do not overflow or underflow.
+
+## Alternatives
+* [libfixmath](https://github.com/PetteriAimonen/libfixmath): C99 library, only supports Q16.16 format backed by 32-bit integers.
+* [fixed_point](https://github.com/johnmcfarlane/fixed_point): C++11 header-only library, also supports generic precision.
 
 ## License
 See the [LICENSE](LICENSE) file
