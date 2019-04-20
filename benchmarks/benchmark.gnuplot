@@ -1,5 +1,5 @@
 #!/usr/bin/gnuplot
-set terminal png size 1000,400 font "Arial,8"
+set terminal png size 860,350 font "Arial,8"
 set datafile separator ","
 set datafile missing NaN
 

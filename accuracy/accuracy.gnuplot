@@ -1,5 +1,5 @@
 #!/usr/bin/gnuplot
-set terminal png size 600,400 font "Arial,8"
+set terminal png size 430,300 font "Arial,8"
 set datafile separator ","
 set key noenhanced
 set key autotitle columnhead
