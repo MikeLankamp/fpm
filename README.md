@@ -1,5 +1,5 @@
 # fpm
-Modern C++ header-only fixed-point math library.
+A C++ header-only fixed-point math library. "fpm" stands for "fixed-point math".
 
 [![Build Status](https://travis-ci.org/MikeLankamp/fpm.svg?branch=master)](https://travis-ci.org/MikeLankamp/fpm)
 [![Build status](https://ci.appveyor.com/api/projects/status/0velpwqk38spu412?svg=true)](https://ci.appveyor.com/project/MikeLankamp/fpm)
@@ -13,52 +13,23 @@ There are several reasons why you can not or choose not to use floating-point ma
 If any of these reasons apply for you, and your problem domain has a clearly outlined range and required resolution,
 then fixed-point numbers might be a solution for you.
 
-## Usage
-`fpm` defines the `fpm::fixed` class, which is templated on the underlying integer type and the number of bits in the fraction:
-```c++
-namespace fpm {
-    template <typename BaseType, typename IntermediateType, unsigned int FractionBits>
-    class fixed;
-}
-```
-**Note:** It's recommended to use a *signed* integer type for `BaseType` (and `IntermediateType`) to emulate floating-point numbers 
-and to allow the compiler to optimize the computations, since overflow and underflow are undefined
-for signed integer types.
-
-To use this class, simply include its header:
+## Quick Start
+To use `fpm`, simply include its header `<fpm/fixed.h>` and use the `fpm::fixed_16_16`, `fpm::fixed_24_8` or `fpm::fixed_8_24`
+types as if they were native floating-pointer types:
 ```c++
 #include <fpm/fixed.h>
-```
-You may wish to typedef a particular choice of underlying type, intermediate type and fraction bitcount, e.g.:
-```c++
-using position = fpm::fixed<std::int32_t, std::int64_t, 16>;
-```
-This defines a signed 16.16 fixed-point number with a range of -32768 to 65535.999985... and a resolution of 0.0000153... It uses 64-bit integers as intermediate type during calculations to avoid loss of information.
+#include <iostream>
 
-For your convenience, several popular fixed-point formats have been defined in the `fpm` namespace:
-```c++
-namespace fpm {
-    using fixed_16_16 = fixed<std::int32_t, std::int64_t, 16>;  // Q16.16 format
-    using fixed_24_8  = fixed<std::int32_t, std::int64_t, 8>;   // Q24.8 format
-    using fixed_8_24  = fixed<std::int32_t, std::int64_t, 24>;  // Q8.24 format
+int main() {
+    fpm::fixed_16_16 x{2.5};
+    std::cout << "The cosine of 2.5 radians is: " << static_cast<float>(cos(x)) << std::endl;
+    return 0;
 }
 ```
 
-## Performance and Accuracy
-Please refer to the pages for [accuracy](docs/accuracy.html) and [performance](docs/performance.html) results.
-
-## Limitations
-Unlike floating-point numbers, `fpm::fixed`:
-* can not represent NaN, infinity or negative zero.
-* do not have a notion of epsilon or subnormal numbers.
-* do have a risk of overflow and underflow.
-
-Notably the last point requires careful use of fixed-point numbers:
-like integers, you must ensure that they do not overflow or underflow.
-
-## Alternatives
-* [libfixmath](https://github.com/PetteriAimonen/libfixmath): C99 library, only supports Q16.16 format backed by 32-bit integers.
-* [fixed_point](https://github.com/johnmcfarlane/fixed_point): C++11 header-only library, also supports generic precision.
+## Documentation
+Please refer to the [documentation](docs/index.md) for detailed information how to use `fpm`, its performance and its accuracy
+compared to native floating pointer numbers.
 
 ## License
 See the [LICENSE](LICENSE) file
