@@ -319,6 +319,82 @@ inline bool operator>=(const fixed<B, I, F>& x, const fixed<B, I, F>& y)
 }
 
 //
+// Classification methods
+//
+
+template <typename B, typename I, unsigned int F>
+inline int fpclassify(fixed<B, I, F> x)
+{
+    return (x.raw_value() == 0) ? FP_ZERO : FP_NORMAL;
+}
+
+template <typename B, typename I, unsigned int F>
+inline bool isfinite(fixed<B, I, F>)
+{
+    return true;
+}
+
+template <typename B, typename I, unsigned int F>
+inline bool isinf(fixed<B, I, F>)
+{
+    return false;
+}
+
+template <typename B, typename I, unsigned int F>
+inline bool isnan(fixed<B, I, F>)
+{
+    return false;
+}
+
+template <typename B, typename I, unsigned int F>
+inline bool isnormal(fixed<B, I, F>)
+{
+    return true;
+}
+
+template <typename B, typename I, unsigned int F>
+inline bool signbit(fixed<B, I, F> x)
+{
+    return x.raw_value() < 0;
+}
+
+template <typename B, typename I, unsigned int F>
+inline bool isgreater(fixed<B, I, F> x, fixed<B, I, F> y)
+{
+    return x > y;
+}
+
+template <typename B, typename I, unsigned int F>
+inline bool isgreaterequal(fixed<B, I, F> x, fixed<B, I, F> y)
+{
+    return x >= y;
+}
+
+template <typename B, typename I, unsigned int F>
+inline bool isless(fixed<B, I, F> x, fixed<B, I, F> y)
+{
+    return x < y;
+}
+
+template <typename B, typename I, unsigned int F>
+inline bool islessequal(fixed<B, I, F> x, fixed<B, I, F> y)
+{
+    return x <= y;
+}
+
+template <typename B, typename I, unsigned int F>
+inline bool islessgreater(fixed<B, I, F> x, fixed<B, I, F> y)
+{
+    return x != y;
+}
+
+template <typename B, typename I, unsigned int F>
+inline bool isunordered(fixed<B, I, F> x, fixed<B, I, F> y)
+{
+    return false;
+}
+
+//
 // Nearest integer operations
 //
 template <typename B, typename I, unsigned int F>
