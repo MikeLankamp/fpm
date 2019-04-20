@@ -55,6 +55,20 @@ set(LIBFIXMATH_SOURCES
 )
 set_source_files_properties(${LIBFIXMATH_SOURCES} PROPERTIES GENERATED TRUE)
 add_library(libfixmath ${LIBFIXMATH_SOURCES})
+
+# Set libfixmath compile options to match fpm functionality
+target_compile_definitions(libfixmath
+  PUBLIC
+    FIXMATH_NO_CACHE        # No caching of results
+
+    #FIXMATH_NO_OVERFLOW    # We want no runtime-overflow detection, but it fails to compile
+    #FIXMATH_NO_ROUNDING    # We do want rounding
+    #FIXMATH_NO_64BIT       # We do want 64-bit integer support
+    #FIXMATH_OPTIMIZE_8BIT  # No special 8-bit architecture optimizations
+    #FIXMATH_SIN_LUT        # No lookup table for sin
+    #FIXMATH_FAST_SIN       # Prefer accuracy over speed
+)
+
 target_include_directories(libfixmath PUBLIC ${LIBFIXMATH_ROOT}/src/libfixmath-external/libfixmath)
 add_dependencies(libfixmath libfixmath-external)
 
