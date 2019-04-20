@@ -1,7 +1,7 @@
 # Accuracy
 
 The images below compare the accuracy (versus the real result) of:
-* `fpm` (the `Q8.24`, `Q16.16`, `Q20.12` types)
+* `fpm` (the `Q8.24`, `Q16.16` and `Q20.12` types)
 * [libfixmath](https://github.com/PetteriAimonen/libfixmath) (`fix16`), an alternative C library.
 
 The accuracy of `Q24.8` was not shown since it was wildly inaccurate. It's advised to use at least 12 bits of fraction for reasonable accuracy for trigonometric operations (as in these tests).

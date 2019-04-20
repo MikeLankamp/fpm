@@ -1,7 +1,7 @@
 # Performance
 
 The image below shows the approximate performance of:
-* `fpm` (the `Q16.16` type)  the alternative 
+* `fpm` (the `Q16.16` type)
 * [libfixmath](https://github.com/PetteriAimonen/libfixmath) (`fix16`), an alternative C library (see [notes](#notes)).
 * native FPU operations (`float` and `double`).
 
