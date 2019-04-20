@@ -94,9 +94,23 @@ public:
         return *this;
     }
 
+    template <typename I, typename std::enable_if<std::is_integral<I>::value>::type* = nullptr>
+	inline fixed& operator+=(I y)
+    {
+        m_value += y * FRACTION_MULT;
+        return *this;
+    }
+
 	inline fixed& operator-=(const fixed& y)
     {
         m_value -= y.m_value;
+        return *this;
+    }
+
+    template <typename I, typename std::enable_if<std::is_integral<I>::value>::type* = nullptr>
+	inline fixed& operator-=(I y)
+    {
+        m_value -= y * FRACTION_MULT;
         return *this;
     }
 
