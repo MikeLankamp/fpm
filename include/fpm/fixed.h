@@ -27,94 +27,94 @@ class fixed
     static_assert(std::is_signed<IntermediateType>::value == std::is_signed<BaseType>::value, "IntermediateType must have same signedness as BaseType");
 
     static constexpr BaseType FRACTION_MULT = BaseType(1) << FractionBits;
+
+    struct raw_construct_tag {};
+    constexpr inline fixed(BaseType val, raw_construct_tag) noexcept : m_value(val) {}
+
 public:
     static const fixed PI;
     static const fixed HALF_PI;
 
-    constexpr inline fixed() = default;
+    constexpr inline fixed() noexcept {}
 
     // Converts an integral number to the fixed-point type.
     // Like static_cast, this truncates bits that don't fit.
     template <typename T, typename std::enable_if<std::is_integral<T>::value>::type* = nullptr>
-    constexpr inline explicit fixed(T val)
+    constexpr inline explicit fixed(T val) noexcept
         : m_value(static_cast<BaseType>(val * FRACTION_MULT))
     {}
 
     // Converts an floating-point number to the fixed-point type.
     // Like static_cast, this truncates bits that don't fit.
     template <typename T, typename std::enable_if<std::is_floating_point<T>::value>::type* = nullptr>
-    constexpr inline explicit fixed(T val)
+    constexpr inline explicit fixed(T val) noexcept
         : m_value(static_cast<BaseType>(std::round(val * FRACTION_MULT)))
     {}
 
     // Explicit conversion to a floating-point type
     template <typename T, typename std::enable_if<std::is_floating_point<T>::value>::type* = nullptr>
-    constexpr inline explicit operator T() const
+    constexpr inline explicit operator T() const noexcept
     {
         return static_cast<T>(m_value) / FRACTION_MULT;
     }
 
     // Explicit conversion to an integral type
     template <typename T, typename std::enable_if<std::is_integral<T>::value>::type* = nullptr>
-    constexpr inline explicit operator T() const
+    constexpr inline explicit operator T() const noexcept
     {
         return static_cast<T>(m_value / FRACTION_MULT);
     }
 
     // Returns the raw underlying value of this type.
     // Do not use this unless you know what you're doing.
-    constexpr inline BaseType raw_value() const
+    constexpr inline BaseType raw_value() const noexcept
     {
         return m_value;
     }
 
     // Constructs a fixed-point number from its raw underlying value.
     // Do not use this unless you know what you're doing.
-    static inline fixed from_raw_value(BaseType value)
+    static constexpr inline fixed from_raw_value(BaseType value) noexcept
     {
-        fixed f;
-        f.m_value = value;
-        return f;
+        return fixed(value, raw_construct_tag{});
     }
 
     //
     // Arithmetic member operators
     //
 
-	inline fixed operator-() const
+    constexpr inline fixed operator-() const noexcept
     {
-        fixed f;
-        f.m_value = -m_value;
-        return f;
+        return fixed::from_raw_value(-m_value);
     }
 
-	inline fixed& operator+=(const fixed& y)
+    inline fixed& operator+=(const fixed& y) noexcept
     {
         m_value += y.m_value;
         return *this;
     }
 
     template <typename I, typename std::enable_if<std::is_integral<I>::value>::type* = nullptr>
-	inline fixed& operator+=(I y)
+    inline fixed& operator+=(I y) noexcept
     {
         m_value += y * FRACTION_MULT;
         return *this;
     }
 
-	inline fixed& operator-=(const fixed& y)
+    inline fixed& operator-=(const fixed& y) noexcept
     {
         m_value -= y.m_value;
         return *this;
     }
 
     template <typename I, typename std::enable_if<std::is_integral<I>::value>::type* = nullptr>
-	inline fixed& operator-=(I y)
+    inline fixed& operator-=(I y) noexcept
     {
         m_value -= y * FRACTION_MULT;
         return *this;
     }
 
-	inline fixed& operator*=(const fixed& y)
+    inline fixed& operator*=(const fixed& y) noexcept
     {
         // Normal fixed-point multiplication is: x * y / 2**FractionBits.
         // To correctly round the last bit in the result, we need one more bit of information.
@@ -125,13 +125,13 @@ public:
     }
 
     template <typename I, typename std::enable_if<std::is_integral<I>::value>::type* = nullptr>
-	inline fixed& operator*=(I y)
+    inline fixed& operator*=(I y) noexcept
     {
         m_value *= y;
         return *this;
     }
 
-	inline fixed& operator/=(const fixed& y)
+    inline fixed& operator/=(const fixed& y) noexcept
     {
         assert(y.m_value != 0);
         // Normal fixed-point division is: x * 2**FractionBits / y.
@@ -143,7 +143,7 @@ public:
     }
 
     template <typename I, typename std::enable_if<std::is_integral<I>::value>::type* = nullptr>
-	inline fixed& operator/=(I y)
+    inline fixed& operator/=(I y) noexcept
     {
         m_value /= y;
         return *this;
@@ -174,7 +174,7 @@ namespace detail
 {
 
 // Returns the index of the most-signifcant set bit
-inline unsigned long find_highest_bit(unsigned long value)
+inline unsigned long find_highest_bit(unsigned long value) noexcept
 {
     assert(value != 0);
 #if defined(_MSC_VER)
@@ -195,19 +195,19 @@ inline unsigned long find_highest_bit(unsigned long value)
 //
 
 template <typename B, typename I, unsigned int F>
-inline fixed<B, I, F> operator+(const fixed<B, I, F>& x, const fixed<B, I, F>& y)
+constexpr inline fixed<B, I, F> operator+(const fixed<B, I, F>& x, const fixed<B, I, F>& y) noexcept
 {
     return fixed<B, I, F>(x) += y;
 }
 
 template <typename B, typename I, unsigned int F, typename T, typename std::enable_if<std::is_integral<T>::value>::type* = nullptr>
-inline fixed<B, I, F> operator+(const fixed<B, I, F>& x, T y)
+constexpr inline fixed<B, I, F> operator+(const fixed<B, I, F>& x, T y) noexcept
 {
     return fixed<B, I, F>(x) += y;
 }
 
 template <typename B, typename I, unsigned int F, typename T, typename std::enable_if<std::is_integral<T>::value>::type* = nullptr>
-inline fixed<B, I, F> operator+(T x, const fixed<B, I, F>& y)
+constexpr inline fixed<B, I, F> operator+(T x, const fixed<B, I, F>& y) noexcept
 {
     return fixed<B, I, F>(y) += x;
 }
@@ -217,19 +217,19 @@ inline fixed<B, I, F> operator+(T x, const fixed<B, I, F>& y)
 //
 
 template <typename B, typename I, unsigned int F>
-inline fixed<B, I, F> operator-(const fixed<B, I, F>& x, const fixed<B, I, F>& y)
+constexpr inline fixed<B, I, F> operator-(const fixed<B, I, F>& x, const fixed<B, I, F>& y) noexcept
 {
     return fixed<B, I, F>(x) -= y;
 }
 
 template <typename B, typename I, unsigned int F, typename T, typename std::enable_if<std::is_integral<T>::value>::type* = nullptr>
-inline fixed<B, I, F> operator-(const fixed<B, I, F>& x, T y)
+constexpr inline fixed<B, I, F> operator-(const fixed<B, I, F>& x, T y) noexcept
 {
     return fixed<B, I, F>(x) -= y;
 }
 
 template <typename B, typename I, unsigned int F, typename T, typename std::enable_if<std::is_integral<T>::value>::type* = nullptr>
-inline fixed<B, I, F> operator-(T x, const fixed<B, I, F>& y)
+constexpr inline fixed<B, I, F> operator-(T x, const fixed<B, I, F>& y) noexcept
 {
     return fixed<B, I, F>(x) -= y;
 }
@@ -239,19 +239,19 @@ inline fixed<B, I, F> operator-(T x, const fixed<B, I, F>& y)
 //
 
 template <typename B, typename I, unsigned int F>
-inline fixed<B, I, F> operator*(const fixed<B, I, F>& x, const fixed<B, I, F>& y)
+constexpr inline fixed<B, I, F> operator*(const fixed<B, I, F>& x, const fixed<B, I, F>& y) noexcept
 {
     return fixed<B, I, F>(x) *= y;
 }
 
 template <typename B, typename I, unsigned int F, typename T, typename std::enable_if<std::is_integral<T>::value>::type* = nullptr>
-inline fixed<B, I, F> operator*(const fixed<B, I, F>& x, T y)
+constexpr inline fixed<B, I, F> operator*(const fixed<B, I, F>& x, T y) noexcept
 {
     return fixed<B, I, F>(x) *= y;
 }
 
 template <typename B, typename I, unsigned int F, typename T, typename std::enable_if<std::is_integral<T>::value>::type* = nullptr>
-inline fixed<B, I, F> operator*(T x, const fixed<B, I, F>& y)
+constexpr inline fixed<B, I, F> operator*(T x, const fixed<B, I, F>& y) noexcept
 {
     return fixed<B, I, F>(y) *= x;
 }
@@ -261,19 +261,19 @@ inline fixed<B, I, F> operator*(T x, const fixed<B, I, F>& y)
 //
 
 template <typename B, typename I, unsigned int F>
-inline fixed<B, I, F> operator/(const fixed<B, I, F>& x, const fixed<B, I, F>& y)
+constexpr inline fixed<B, I, F> operator/(const fixed<B, I, F>& x, const fixed<B, I, F>& y) noexcept
 {
     return fixed<B, I, F>(x) /= y;
 }
 
 template <typename B, typename I, unsigned int F, typename T, typename std::enable_if<std::is_integral<T>::value>::type* = nullptr>
-inline fixed<B, I, F> operator/(const fixed<B, I, F>& x, T y)
+constexpr inline fixed<B, I, F> operator/(const fixed<B, I, F>& x, T y) noexcept
 {
     return fixed<B, I, F>(x) /= y;
 }
 
 template <typename B, typename I, unsigned int F, typename T, typename std::enable_if<std::is_integral<T>::value>::type* = nullptr>
-inline fixed<B, I, F> operator/(T x, const fixed<B, I, F>& y)
+constexpr inline fixed<B, I, F> operator/(T x, const fixed<B, I, F>& y) noexcept
 {
     return fixed<B, I, F>(x) /= y;
 }
@@ -283,37 +283,37 @@ inline fixed<B, I, F> operator/(T x, const fixed<B, I, F>& y)
 //
 
 template <typename B, typename I, unsigned int F>
-inline bool operator==(const fixed<B, I, F>& x, const fixed<B, I, F>& y)
+constexpr inline bool operator==(const fixed<B, I, F>& x, const fixed<B, I, F>& y) noexcept
 {
     return x.raw_value() == y.raw_value();
 }
 
 template <typename B, typename I, unsigned int F>
-inline bool operator!=(const fixed<B, I, F>& x, const fixed<B, I, F>& y)
+constexpr inline bool operator!=(const fixed<B, I, F>& x, const fixed<B, I, F>& y) noexcept
 {
     return x.raw_value() != y.raw_value();
 }
 
 template <typename B, typename I, unsigned int F>
-inline bool operator<(const fixed<B, I, F>& x, const fixed<B, I, F>& y)
+constexpr inline bool operator<(const fixed<B, I, F>& x, const fixed<B, I, F>& y) noexcept
 {
     return x.raw_value() < y.raw_value();
 }
 
 template <typename B, typename I, unsigned int F>
-inline bool operator>(const fixed<B, I, F>& x, const fixed<B, I, F>& y)
+constexpr inline bool operator>(const fixed<B, I, F>& x, const fixed<B, I, F>& y) noexcept
 {
     return x.raw_value() > y.raw_value();
 }
 
 template <typename B, typename I, unsigned int F>
-inline bool operator<=(const fixed<B, I, F>& x, const fixed<B, I, F>& y)
+constexpr inline bool operator<=(const fixed<B, I, F>& x, const fixed<B, I, F>& y) noexcept
 {
     return x.raw_value() <= y.raw_value();
 }
 
 template <typename B, typename I, unsigned int F>
-inline bool operator>=(const fixed<B, I, F>& x, const fixed<B, I, F>& y)
+constexpr inline bool operator>=(const fixed<B, I, F>& x, const fixed<B, I, F>& y) noexcept
 {
     return x.raw_value() >= y.raw_value();
 }
@@ -323,73 +323,73 @@ inline bool operator>=(const fixed<B, I, F>& x, const fixed<B, I, F>& y)
 //
 
 template <typename B, typename I, unsigned int F>
-inline int fpclassify(fixed<B, I, F> x)
+constexpr inline int fpclassify(fixed<B, I, F> x) noexcept
 {
     return (x.raw_value() == 0) ? FP_ZERO : FP_NORMAL;
 }
 
 template <typename B, typename I, unsigned int F>
-inline bool isfinite(fixed<B, I, F>)
+constexpr inline bool isfinite(fixed<B, I, F>) noexcept
 {
     return true;
 }
 
 template <typename B, typename I, unsigned int F>
-inline bool isinf(fixed<B, I, F>)
+constexpr inline bool isinf(fixed<B, I, F>) noexcept
 {
     return false;
 }
 
 template <typename B, typename I, unsigned int F>
-inline bool isnan(fixed<B, I, F>)
+constexpr inline bool isnan(fixed<B, I, F>) noexcept
 {
     return false;
 }
 
 template <typename B, typename I, unsigned int F>
-inline bool isnormal(fixed<B, I, F>)
+constexpr inline bool isnormal(fixed<B, I, F>) noexcept
 {
     return true;
 }
 
 template <typename B, typename I, unsigned int F>
-inline bool signbit(fixed<B, I, F> x)
+constexpr inline bool signbit(fixed<B, I, F> x) noexcept
 {
     return x.raw_value() < 0;
 }
 
 template <typename B, typename I, unsigned int F>
-inline bool isgreater(fixed<B, I, F> x, fixed<B, I, F> y)
+constexpr inline bool isgreater(fixed<B, I, F> x, fixed<B, I, F> y) noexcept
 {
     return x > y;
 }
 
 template <typename B, typename I, unsigned int F>
-inline bool isgreaterequal(fixed<B, I, F> x, fixed<B, I, F> y)
+constexpr inline bool isgreaterequal(fixed<B, I, F> x, fixed<B, I, F> y) noexcept
 {
     return x >= y;
 }
 
 template <typename B, typename I, unsigned int F>
-inline bool isless(fixed<B, I, F> x, fixed<B, I, F> y)
+constexpr inline bool isless(fixed<B, I, F> x, fixed<B, I, F> y) noexcept
 {
     return x < y;
 }
 
 template <typename B, typename I, unsigned int F>
-inline bool islessequal(fixed<B, I, F> x, fixed<B, I, F> y)
+constexpr inline bool islessequal(fixed<B, I, F> x, fixed<B, I, F> y) noexcept
 {
     return x <= y;
 }
 
 template <typename B, typename I, unsigned int F>
-inline bool islessgreater(fixed<B, I, F> x, fixed<B, I, F> y)
+constexpr inline bool islessgreater(fixed<B, I, F> x, fixed<B, I, F> y) noexcept
 {
     return x != y;
 }
 
 template <typename B, typename I, unsigned int F>
-inline bool isunordered(fixed<B, I, F> x, fixed<B, I, F> y)
+constexpr inline bool isunordered(fixed<B, I, F> x, fixed<B, I, F> y) noexcept
 {
     return false;
 }
@@ -398,7 +398,7 @@ inline bool isunordered(fixed<B, I, F> x, fixed<B, I, F> y)
 // Nearest integer operations
 //
 template <typename B, typename I, unsigned int F>
-inline fixed<B, I, F> ceil(fixed<B, I, F> x)
+inline fixed<B, I, F> ceil(fixed<B, I, F> x) noexcept
 {
     constexpr auto FRAC = B(1) << F;
     auto value = x.raw_value();
@@ -407,7 +407,7 @@ inline fixed<B, I, F> ceil(fixed<B, I, F> x)
 }
 
 template <typename B, typename I, unsigned int F>
-inline fixed<B, I, F> floor(fixed<B, I, F> x)
+inline fixed<B, I, F> floor(fixed<B, I, F> x) noexcept
 {
     constexpr auto FRAC = B(1) << F;
     auto value = x.raw_value();
@@ -416,14 +416,14 @@ inline fixed<B, I, F> floor(fixed<B, I, F> x)
 }
 
 template <typename B, typename I, unsigned int F>
-inline fixed<B, I, F> trunc(fixed<B, I, F> x)
+inline fixed<B, I, F> trunc(fixed<B, I, F> x) noexcept
 {
     constexpr auto FRAC = B(1) << F;
     return fixed<B, I, F>::from_raw_value(x.raw_value() / FRAC * FRAC);
 }
 
 template <typename B, typename I, unsigned int F>
-inline fixed<B, I, F> round(fixed<B, I, F> x)
+inline fixed<B, I, F> round(fixed<B, I, F> x) noexcept
 {
     constexpr auto FRAC = B(1) << F;
     auto value = x.raw_value() / (FRAC / 2);
@@ -431,7 +431,7 @@ inline fixed<B, I, F> round(fixed<B, I, F> x)
 }
 
 template <typename B, typename I, unsigned int F>
-fixed<B, I, F> nearbyint(fixed<B, I, F> x)
+fixed<B, I, F> nearbyint(fixed<B, I, F> x) noexcept
 {
     // Rounding mode is assumed to be FE_TONEAREST
     constexpr auto FRAC = B(1) << F;
@@ -444,7 +444,7 @@ fixed<B, I, F> nearbyint(fixed<B, I, F> x)
 }
 
 template <typename B, typename I, unsigned int F>
-inline fixed<B, I, F> rint(fixed<B, I, F> x)
+constexpr inline fixed<B, I, F> rint(fixed<B, I, F> x) noexcept
 {
     // Rounding mode is assumed to be FE_TONEAREST
     return nearbyint(x);
@@ -454,34 +454,37 @@ inline fixed<B, I, F> rint(fixed<B, I, F> x)
 // Mathematical functions
 //
 template <typename B, typename I, unsigned int F>
-inline fixed<B, I, F> abs(fixed<B, I, F> x)
+constexpr inline fixed<B, I, F> abs(fixed<B, I, F> x) noexcept
 {
     return (x >= fixed<B, I, F>{0}) ? x : -x;
 }
 
 template <typename B, typename I, unsigned int F, typename C, typename J, unsigned int G>
-inline fixed<B, I, F> copysign(fixed<B, I, F> x, fixed<C, J, G> y)
+constexpr inline fixed<B, I, F> copysign(fixed<B, I, F> x, fixed<C, J, G> y) noexcept
 {
-    x = abs(x);
-    return (y >= fixed<C, J, G>{0}) ? x : -x;
+    return
+        x = abs(x),
+        (y >= fixed<C, J, G>{0}) ? x : -x;
 }
 
 template <typename B, typename I, unsigned int F>
-inline fixed<B, I, F> fmod(fixed<B, I, F> x, fixed<B, I, F> y)
+constexpr inline fixed<B, I, F> fmod(fixed<B, I, F> x, fixed<B, I, F> y) noexcept
 {
-    assert(y.raw_value() != 0);
-    return fixed<B, I, F>::from_raw_value(x.raw_value() % y.raw_value());
+    return
+        assert(y.raw_value() != 0),
+        fixed<B, I, F>::from_raw_value(x.raw_value() % y.raw_value());
 }
 
 template <typename B, typename I, unsigned int F>
-inline fixed<B, I, F> remainder(fixed<B, I, F> x, fixed<B, I, F> y)
+constexpr inline fixed<B, I, F> remainder(fixed<B, I, F> x, fixed<B, I, F> y) noexcept
 {
-    assert(y.raw_value() != 0);
-    return x - nearbyint(x / y) * y;
+    return
+        assert(y.raw_value() != 0),
+        x - nearbyint(x / y) * y;
 }
 
 template <typename B, typename I, unsigned int F>
-inline fixed<B, I, F> remquo(fixed<B, I, F> x, fixed<B, I, F> y, int* quo)
+inline fixed<B, I, F> remquo(fixed<B, I, F> x, fixed<B, I, F> y, int* quo) noexcept
 {
     assert(y.raw_value() != 0);
     assert(quo != nullptr);
@@ -494,7 +497,7 @@ inline fixed<B, I, F> remquo(fixed<B, I, F> x, fixed<B, I, F> y, int* quo)
 //
 
 template <typename B, typename I, unsigned int F>
-fixed<B, I, F> sqrt(fixed<B, I, F> x)
+fixed<B, I, F> sqrt(fixed<B, I, F> x) noexcept
 {
     using Fixed = fixed<B, I, F>;
 
@@ -520,7 +523,7 @@ fixed<B, I, F> sqrt(fixed<B, I, F> x)
 //
 
 template <typename B, typename I, unsigned int F>
-fixed<B, I, F> sin(fixed<B, I, F> x)
+fixed<B, I, F> sin(fixed<B, I, F> x) noexcept
 {
     // Use Bhaskara I's sine approximation:
     // It has a relative error of no more than 1.8% and has 0% error 
@@ -548,13 +551,13 @@ fixed<B, I, F> sin(fixed<B, I, F> x)
 }
 
 template <typename B, typename I, unsigned int F>
-inline fixed<B, I, F> cos(fixed<B, I, F> x)
+inline fixed<B, I, F> cos(fixed<B, I, F> x) noexcept
 {
     return sin(fixed<B, I, F>::HALF_PI - x);
 }
 
 template <typename B, typename I, unsigned int F>
-inline fixed<B, I, F> tan(fixed<B, I, F> x)
+inline fixed<B, I, F> tan(fixed<B, I, F> x) noexcept
 {
     using Fixed = fixed<B, I, F>;
 
@@ -568,7 +571,7 @@ inline fixed<B, I, F> tan(fixed<B, I, F> x)
 }
 
 template <typename B, typename I, unsigned int F>
-fixed<B, I, F> atan(fixed<B, I, F> x)
+fixed<B, I, F> atan(fixed<B, I, F> x) noexcept
 {
     using Fixed = fixed<B, I, F>;
     if (x < Fixed(0))
@@ -590,7 +593,7 @@ fixed<B, I, F> atan(fixed<B, I, F> x)
 }
 
 template <typename B, typename I, unsigned int F>
-fixed<B, I, F> asin(fixed<B, I, F> x)
+fixed<B, I, F> asin(fixed<B, I, F> x) noexcept
 {
     using Fixed = fixed<B, I, F>;
     assert(x >= Fixed(-1) && x <= Fixed(+1));
@@ -604,7 +607,7 @@ fixed<B, I, F> asin(fixed<B, I, F> x)
 }
 
 template <typename B, typename I, unsigned int F>
-fixed<B, I, F> acos(fixed<B, I, F> x)
+fixed<B, I, F> acos(fixed<B, I, F> x) noexcept
 {
     using Fixed = fixed<B, I, F>;
     assert(x >= Fixed(-1) && x <= Fixed(+1));
@@ -618,7 +621,7 @@ fixed<B, I, F> acos(fixed<B, I, F> x)
 }
 
 template <typename B, typename I, unsigned int F>
-fixed<B, I, F> atan2(fixed<B, I, F> y, fixed<B, I, F> x)
+fixed<B, I, F> atan2(fixed<B, I, F> y, fixed<B, I, F> x) noexcept
 {
     using Fixed = fixed<B, I, F>;
     if (x == Fixed(0))
