@@ -56,7 +56,7 @@ def main():
             d = operation_data[operation_name]
             data = []
             for type in types:
-                data.append(str(d.get(type, 0)))
+                data.append(str(d.get(type, "-")))
             outfile.write("{},{}\n".format(operation_name, ",".join(data)))
 
     return 0

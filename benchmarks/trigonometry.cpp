@@ -44,16 +44,16 @@ BENCHMARK_TEMPLATE1_CAPTURE(trigonometry, asin, double, &std::asin);
 BENCHMARK_TEMPLATE1_CAPTURE(trigonometry, acos, double, &std::acos);
 BENCHMARK_TEMPLATE1_CAPTURE(trigonometry, atan, double, &std::atan);
 
-BENCHMARK_TEMPLATE1_CAPTURE(trigonometry, sin,  Fix16, fix16_func<&Fix16::sin>);
-BENCHMARK_TEMPLATE1_CAPTURE(trigonometry, cos,  Fix16, fix16_func<&Fix16::cos>);
-BENCHMARK_TEMPLATE1_CAPTURE(trigonometry, tan,  Fix16, fix16_func<&Fix16::tan>);
-BENCHMARK_TEMPLATE1_CAPTURE(trigonometry, asin, Fix16, fix16_func<&Fix16::asin>);
-BENCHMARK_TEMPLATE1_CAPTURE(trigonometry, acos, Fix16, fix16_func<&Fix16::acos>);
-BENCHMARK_TEMPLATE1_CAPTURE(trigonometry, atan, Fix16, fix16_func<&Fix16::atan>);
-
 BENCHMARK_TEMPLATE1_CAPTURE(trigonometry, sin, fpm::fixed_16_16, &fpm::sin);
 BENCHMARK_TEMPLATE1_CAPTURE(trigonometry, cos, fpm::fixed_16_16, &fpm::cos);
 BENCHMARK_TEMPLATE1_CAPTURE(trigonometry, tan, fpm::fixed_16_16, &fpm::tan);
 BENCHMARK_TEMPLATE1_CAPTURE(trigonometry, asin, fpm::fixed_16_16, &fpm::asin);
 BENCHMARK_TEMPLATE1_CAPTURE(trigonometry, acos, fpm::fixed_16_16, &fpm::acos);
 BENCHMARK_TEMPLATE1_CAPTURE(trigonometry, atan, fpm::fixed_16_16, &fpm::atan);
+
+BENCHMARK_TEMPLATE1_CAPTURE(trigonometry, sin,  Fix16, fix16_func<&Fix16::sin>);
+BENCHMARK_TEMPLATE1_CAPTURE(trigonometry, cos,  Fix16, fix16_func<&Fix16::cos>);
+BENCHMARK_TEMPLATE1_CAPTURE(trigonometry, tan,  Fix16, fix16_func<&Fix16::tan>);
+BENCHMARK_TEMPLATE1_CAPTURE(trigonometry, asin, Fix16, fix16_func<&Fix16::asin>);
+BENCHMARK_TEMPLATE1_CAPTURE(trigonometry, acos, Fix16, fix16_func<&Fix16::acos>);
+BENCHMARK_TEMPLATE1_CAPTURE(trigonometry, atan, Fix16, fix16_func<&Fix16::atan>);

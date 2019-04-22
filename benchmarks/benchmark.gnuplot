@@ -1,7 +1,7 @@
 #!/usr/bin/gnuplot
 set terminal png size 860,350 font "Arial,8"
 set datafile separator ","
-set datafile missing NaN
+set datafile missing "-"
 
 set style data histogram
 set style fill solid border linecolor black

@@ -32,6 +32,7 @@ class fixed
     constexpr inline fixed(BaseType val, raw_construct_tag) noexcept : m_value(val) {}
 
 public:
+    static const fixed E;
     static const fixed PI;
     static const fixed HALF_PI;
 
@@ -154,6 +155,9 @@ private:
 };
 
 template <typename BaseType, typename IntermediateType, unsigned int FractionBits>
+const fixed<BaseType, IntermediateType, FractionBits> fixed<BaseType, IntermediateType, FractionBits>::E(2.7182818284590452353602874713527);
+
+template <typename BaseType, typename IntermediateType, unsigned int FractionBits>
 const fixed<BaseType, IntermediateType, FractionBits> fixed<BaseType, IntermediateType, FractionBits>::PI(3.1415926535897932384626433832795);
 
 template <typename BaseType, typename IntermediateType, unsigned int FractionBits>
@@ -174,7 +178,7 @@ namespace detail
 {
 
 // Returns the index of the most-signifcant set bit
-inline unsigned long find_highest_bit(unsigned long value) noexcept
+inline long find_highest_bit(unsigned long value) noexcept
 {
     assert(value != 0);
 #if defined(_MSC_VER)
@@ -496,6 +500,194 @@ inline fixed<B, I, F> remquo(fixed<B, I, F> x, fixed<B, I, F> y, int* quo) noexc
 // Power functions
 //
 
+template <typename B, typename I, unsigned int F, typename T, typename std::enable_if<std::is_integral<T>::value>::type* = nullptr>
+fixed<B, I, F> pow(fixed<B, I, F> base, T exp) noexcept
+{
+    using Fixed = fixed<B, I, F>;
+    constexpr auto FRAC = B(1) << F;
+
+    if (base == Fixed(0)) {
+        assert(exp > 0);
+        return Fixed(0);
+    }
+
+    Fixed result {1};
+    if (exp < 0)
+    {
+        for (Fixed intermediate = base; exp != 0; exp /= 2, intermediate *= intermediate)
+        {
+            if ((exp % 2) != 0)
+            {
+                result /= intermediate;
+            }
+        }
+    }
+    else
+    {
+        for (Fixed intermediate = base; exp != 0; exp /= 2, intermediate *= intermediate)
+        {
+            if ((exp % 2) != 0)
+            {
+                result *= intermediate;
+            }
+        }
+    }
+    return result;
+}
+
+template <typename B, typename I, unsigned int F>
+fixed<B, I, F> pow(fixed<B, I, F> base, fixed<B, I, F> exp) noexcept
+{
+    using Fixed = fixed<B, I, F>;
+
+    if (base == Fixed(0)) {
+        assert(exp > Fixed(0));
+        return Fixed(0);
+    }
+
+    if (exp < Fixed(0))
+    {
+        return 1 / pow(base, -exp);
+    }
+
+    constexpr auto FRAC = B(1) << F;
+    if (exp.raw_value() % FRAC == 0)
+    {
+        // Non-fractional exponents are easier to calculate
+        return pow(base, exp.raw_value() / FRAC);
+    }
+
+    // For negative bases we do not support fractional exponents.
+    // Technically fractions with odd denominators could work,
+    // but that's too much work to figure out.
+    assert(base > Fixed(0));
+    return exp2(log2(base) * exp);
+}
+
+template <typename B, typename I, unsigned int F>
+fixed<B, I, F> exp(fixed<B, I, F> x) noexcept
+{
+    using Fixed = fixed<B, I, F>;
+    if (x < Fixed(0)) {
+        return 1 / exp(-x);
+    }
+    constexpr auto FRAC = B(1) << F;
+    const B x_int = x.raw_value() / FRAC;
+    x -= x_int;
+    assert(x >= Fixed(0) && x < Fixed(1));
+
+    constexpr Fixed fA { 1.3903728105644451e-2 };
+    constexpr Fixed fB { 3.4800571158543038e-2 };
+    constexpr Fixed fC { 1.7040197373796334e-1 };
+    constexpr Fixed fD { 4.9909609871464493e-1 };
+    constexpr Fixed fE { 1.0000794567422495 };
+    constexpr Fixed fF { 9.9999887043019773e-1 };
+    return pow(Fixed::E, x_int) * (((((fA * x + fB) * x + fC) * x + fD) * x + fE) * x + fF);
+}
+
+template <typename B, typename I, unsigned int F>
+fixed<B, I, F> exp2(fixed<B, I, F> x) noexcept
+{
+    using Fixed = fixed<B, I, F>;
+    if (x < Fixed(0)) {
+        return 1 / exp2(-x);
+    }
+    constexpr auto FRAC = B(1) << F;
+    const B x_int = x.raw_value() / FRAC;
+    x -= x_int;
+    assert(x >= Fixed(0) && x < Fixed(1));
+
+    constexpr Fixed fA { 1.8964611454333148e-3 };
+    constexpr Fixed fB { 8.9428289841091295e-3 };
+    constexpr Fixed fC { 5.5866246304520701e-2 };
+    constexpr Fixed fD { 2.4013971109076949e-1 };
+    constexpr Fixed fE { 6.9315475247516736e-1 };
+    constexpr Fixed fF { 9.9999989311082668e-1 };
+    return Fixed(1 << x_int) * (((((fA * x + fB) * x + fC) * x + fD) * x + fE) * x + fF);
+}
+
+template <typename B, typename I, unsigned int F>
+fixed<B, I, F> expm1(fixed<B, I, F> x) noexcept
+{
+    return exp(x) - 1;
+}
+
+template <typename B, typename I, unsigned int F>
+fixed<B, I, F> log2(fixed<B, I, F> x) noexcept
+{
+    using Fixed = fixed<B, I, F>;
+    assert(x > Fixed(0));
+
+    // Normalize input to the [1:2] domain
+    B value = x.raw_value();
+    const long highest = detail::find_highest_bit(value);
+    if (highest >= F) {
+        value >>= (highest - F);
+    } else {
+        value <<= (F - highest);
+    }
+    x = Fixed::from_raw_value(value);
+    assert(x >= Fixed(1) && x < Fixed(2));
+
+    constexpr Fixed fA {  4.4873610194131727e-2 };
+    constexpr Fixed fB { -4.1656368651734915e-1 };
+    constexpr Fixed fC {  1.6311487636297217 };
+    constexpr Fixed fD { -3.5507929249026341 };
+    constexpr Fixed fE {  5.0917108110420042 };
+    constexpr Fixed fF { -2.8003640347009253 };
+    return Fixed(highest - F) + (((((fA * x + fB) * x + fC) * x + fD) * x + fE) * x + fF);
+}
+
+template <typename B, typename I, unsigned int F>
+fixed<B, I, F> log(fixed<B, I, F> x) noexcept
+{
+    using Fixed = fixed<B, I, F>;
+    return log2(x) / log2(Fixed::E);
+}
+
+template <typename B, typename I, unsigned int F>
+fixed<B, I, F> log10(fixed<B, I, F> x) noexcept
+{
+    using Fixed = fixed<B, I, F>;
+    return log2(x) / log2(Fixed(10));
+}
+
+template <typename B, typename I, unsigned int F>
+fixed<B, I, F> log1p(fixed<B, I, F> x) noexcept
+{
+    return log(1 + x);
+}
+
+template <typename B, typename I, unsigned int F>
+fixed<B, I, F> cbrt(fixed<B, I, F> x) noexcept
+{
+    using Fixed = fixed<B, I, F>;
+    constexpr auto FRAC = B(1) << F;
+
+    if (x == Fixed(0))
+    {
+        return x;
+    }
+    if (x < Fixed(0))
+    {
+        return -cbrt(-x);
+    }
+    assert(x >= Fixed(0));
+
+    // Initial guess is a third of the exponent
+    auto guess = Fixed::from_raw_value(1 << ((detail::find_highest_bit(x.raw_value()) - F) / 3 + F));
+
+    // Do N rounds of Newton iterations
+    for (int i = 0; i < 5; ++i)
+    {
+        auto guess2 = guess * guess;
+        if (guess2 == Fixed(0))
+            break;
+        guess = (2 * guess + x / guess2) / 3;
+    }
+    return guess;
+}
+
 template <typename B, typename I, unsigned int F>
 fixed<B, I, F> sqrt(fixed<B, I, F> x) noexcept
 {
@@ -513,9 +705,18 @@ fixed<B, I, F> sqrt(fixed<B, I, F> x) noexcept
     // Do N rounds of Newton iterations
     for (int i = 0; i < 3; ++i)
     {
+        if (guess == Fixed(0))
+            break;
         guess = (guess + x / guess) / 2;
     }
     return guess;
+}
+
+template <typename B, typename I, unsigned int F>
+fixed<B, I, F> hypot(fixed<B, I, F> x, fixed<B, I, F> y) noexcept
+{
+    assert(x != 0 || y != 0);
+    return sqrt(x*x + y*y);
 }
 
 //

@@ -102,7 +102,7 @@ if (GNUPLOT_FOUND)
 
   set(DATA_FILES_ACCURACY "")
   set(IMG_FILES_ACCURACY "")
-  foreach(DATA sin-trig cos-trig tan-trig asin-invtrig acos-invtrig atan-invtrig atan2-trig sqrt-auto)
+  foreach(DATA sin-trig cos-trig tan-trig asin-invtrig acos-invtrig atan-invtrig atan2-trig sqrt-auto cbrt-auto pow-auto exp-auto exp2-auto log-auto log2-auto log10-auto)
     string(REGEX MATCHALL "[^-]+" M ${DATA})
     list(GET M 0 SERIES)
     list(GET M 1 TYPE)
@@ -150,7 +150,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
   add_custom_command(
     OUTPUT ${DATA_FILE_PERFORMANCE_GNUPLOT}
     COMMAND python ${PROJECT_SOURCE_DIR}/benchmarks/benchmark.py ${DATA_FILE_PERFORMANCE_JSON} ${DATA_FILE_PERFORMANCE_GNUPLOT}
-    DEPENDS ${DATA_FILE_PERFORMANCE_JSON} benchmarks/benchmark.py
+    DEPENDS ${DATA_FILE_PERFORMANCE_JSON} ${PROJECT_SOURCE_DIR}/benchmarks/benchmark.py
     WORKING_DIRECTORY ${DATA_DIR}
     VERBATIM
     COMMENT "Converting performance data for GnuPlot"
@@ -160,7 +160,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
   add_custom_command(
     OUTPUT ${IMG_FILE_PERFORMANCE}
     COMMAND ${GNUPLOT_EXECUTABLE} ${PROJECT_SOURCE_DIR}/benchmarks/benchmark.gnuplot
-    DEPENDS ${DATA_FILE_PERFORMANCE_GNUPLOT} benchmarks/benchmark.gnuplot
+    DEPENDS ${DATA_FILE_PERFORMANCE_GNUPLOT} ${PROJECT_SOURCE_DIR}/benchmarks/benchmark.gnuplot
     WORKING_DIRECTORY ${DATA_DIR}
     VERBATIM
     COMMENT "Plotting performance data"

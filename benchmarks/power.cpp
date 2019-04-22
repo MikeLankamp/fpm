@@ -9,19 +9,20 @@
               #func "<" #a ">/" #test_case_name,					\
 		   	  [](::benchmark::State& st) { func<a>(st, __VA_ARGS__); })))
 
-template <Fix16 (Fix16::*func)() const>
+template <fix16_t (*func)(fix16_t)>
 static Fix16 fix16_func(Fix16 f)
 {
-	return (f.*func)();
+	return (*func)(f);
 }
 
-// Constant for our power function argument.
+// Constants for our power function arguments.
 // Stored as volatile to force the compiler to read them and 
 // not optimize the entire expression into a constant.
-static volatile double s_x = 0.678;
+static volatile double s_x = 10.678;
+static volatile double s_y =  0.678;
 
 template <typename TValue>
-static void power(benchmark::State& state, TValue (*func)(TValue))
+static void power1(benchmark::State& state, TValue (*func)(TValue))
 {
 	for (auto _ : state)
 	{
@@ -30,7 +31,48 @@ static void power(benchmark::State& state, TValue (*func)(TValue))
 	}
 }
 
-BENCHMARK_TEMPLATE1_CAPTURE(power, sqrt, float, &std::sqrt);
-BENCHMARK_TEMPLATE1_CAPTURE(power, sqrt, double, &std::sqrt);
-BENCHMARK_TEMPLATE1_CAPTURE(power, sqrt, Fix16, fix16_func<&Fix16::sqrt>);
-BENCHMARK_TEMPLATE1_CAPTURE(power, sqrt, fpm::fixed_16_16, &fpm::sqrt);
+template <typename TValue>
+static void power2(benchmark::State& state, TValue (*func)(TValue, TValue))
+{
+	for (auto _ : state)
+	{
+		TValue x{ static_cast<TValue>(s_x) };
+		TValue y{ static_cast<TValue>(s_y) };
+		benchmark::DoNotOptimize(func(x, y));
+	}
+}
+
+BENCHMARK_TEMPLATE1_CAPTURE(power1, sqrt, float, &std::sqrt);
+BENCHMARK_TEMPLATE1_CAPTURE(power1, sqrt, double, &std::sqrt);
+BENCHMARK_TEMPLATE1_CAPTURE(power1, sqrt, fpm::fixed_16_16, &fpm::sqrt);
+BENCHMARK_TEMPLATE1_CAPTURE(power1, sqrt, Fix16, fix16_func<&fix16_sqrt>);
+
+BENCHMARK_TEMPLATE1_CAPTURE(power1, cbrt, float, &std::cbrt);
+BENCHMARK_TEMPLATE1_CAPTURE(power1, cbrt, double, &std::cbrt);
+BENCHMARK_TEMPLATE1_CAPTURE(power1, cbrt, fpm::fixed_16_16, &fpm::cbrt);
+
+BENCHMARK_TEMPLATE1_CAPTURE(power1, log, float, &std::log);
+BENCHMARK_TEMPLATE1_CAPTURE(power1, log, double, &std::log);
+BENCHMARK_TEMPLATE1_CAPTURE(power1, log, fpm::fixed_16_16, &fpm::log);
+
+BENCHMARK_TEMPLATE1_CAPTURE(power1, log2, float, &std::log2);
+BENCHMARK_TEMPLATE1_CAPTURE(power1, log2, double, &std::log2);
+BENCHMARK_TEMPLATE1_CAPTURE(power1, log2, fpm::fixed_16_16, &fpm::log2);
+BENCHMARK_TEMPLATE1_CAPTURE(power1, log2, Fix16, fix16_func<&fix16_log2>);
+
+BENCHMARK_TEMPLATE1_CAPTURE(power1, log10, float, &std::log10);
+BENCHMARK_TEMPLATE1_CAPTURE(power1, log10, double, &std::log10);
+BENCHMARK_TEMPLATE1_CAPTURE(power1, log10, fpm::fixed_16_16, &fpm::log10);
+
+BENCHMARK_TEMPLATE1_CAPTURE(power1, exp, float, &std::exp);
+BENCHMARK_TEMPLATE1_CAPTURE(power1, exp, double, &std::exp);
+BENCHMARK_TEMPLATE1_CAPTURE(power1, exp, fpm::fixed_16_16, &fpm::exp);
+BENCHMARK_TEMPLATE1_CAPTURE(power1, exp, Fix16, fix16_func<&fix16_exp>);
+
+BENCHMARK_TEMPLATE1_CAPTURE(power1, exp2, float, &std::exp2);
+BENCHMARK_TEMPLATE1_CAPTURE(power1, exp2, double, &std::exp2);
+BENCHMARK_TEMPLATE1_CAPTURE(power1, exp2, fpm::fixed_16_16, &fpm::exp2);
+
+BENCHMARK_TEMPLATE1_CAPTURE(power2, pow, float, &std::pow);
+BENCHMARK_TEMPLATE1_CAPTURE(power2, pow, double, &std::pow);
+BENCHMARK_TEMPLATE1_CAPTURE(power2, pow, fpm::fixed_16_16, &fpm::pow);

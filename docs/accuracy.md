@@ -25,5 +25,10 @@ The results show that `fpm`'s inverse trigonometric functions have better accura
 
 ## Power functions
 ![](http://mikelankampgithub.s3-website-eu-west-1.amazonaws.com/fpm/accuracy-sqrt.png)
-
-The results show that `fpm`'s power functions have worse accuracy then `libfixmath`.
+![](http://mikelankampgithub.s3-website-eu-west-1.amazonaws.com/fpm/accuracy-cbrt.png)
+![](http://mikelankampgithub.s3-website-eu-west-1.amazonaws.com/fpm/accuracy-exp.png)
+![](http://mikelankampgithub.s3-website-eu-west-1.amazonaws.com/fpm/accuracy-log.png)
+![](http://mikelankampgithub.s3-website-eu-west-1.amazonaws.com/fpm/accuracy-exp2.png)
+![](http://mikelankampgithub.s3-website-eu-west-1.amazonaws.com/fpm/accuracy-log2.png)
+![](http://mikelankampgithub.s3-website-eu-west-1.amazonaws.com/fpm/accuracy-pow.png)
+![](http://mikelankampgithub.s3-website-eu-west-1.amazonaws.com/fpm/accuracy-log10.png)
