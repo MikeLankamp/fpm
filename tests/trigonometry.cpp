@@ -3,10 +3,10 @@
 
 TEST(trigonometry, sin)
 {
-    using P = fpm::fixed<std::int32_t, std::int64_t, 12>;
+    using P = fpm::fixed<std::int32_t, std::int64_t, 16>;
     const double PI = std::acos(-1);
 
-    constexpr auto MAX_ERROR_PERC = 0.025;
+    constexpr auto MAX_ERROR_PERC = 0.002;
 
     for (int angle = -1799; angle <= 1800; ++angle)
     {
@@ -19,10 +19,10 @@ TEST(trigonometry, sin)
 
 TEST(trigonometry, cos)
 {
-    using P = fpm::fixed<std::int32_t, std::int64_t, 12>;
+    using P = fpm::fixed<std::int32_t, std::int64_t, 16>;
     const double PI = std::acos(-1);
 
-    constexpr auto MAX_ERROR_PERC = 0.025;
+    constexpr auto MAX_ERROR_PERC = 0.002;
 
     for (int angle = -1799; angle <= 1800; ++angle)
     {
@@ -35,10 +35,10 @@ TEST(trigonometry, cos)
 
 TEST(trigonometry, tan)
 {
-    using P = fpm::fixed<std::int32_t, std::int64_t, 12>;
+    using P = fpm::fixed<std::int32_t, std::int64_t, 16>;
     const double PI = std::acos(-1);
 
-    constexpr auto MAX_ERROR_PERC = 0.025;
+    constexpr auto MAX_ERROR_PERC = 0.002;
 
     for (int angle = -1799; angle <= 1800; ++angle)
     {

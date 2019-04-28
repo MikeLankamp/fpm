@@ -35,6 +35,7 @@ public:
     static const fixed E;
     static const fixed PI;
     static const fixed HALF_PI;
+    static const fixed TWO_PI;
 
     constexpr inline fixed() noexcept {}
 
@@ -162,6 +163,9 @@ const fixed<BaseType, IntermediateType, FractionBits> fixed<BaseType, Intermedia
 
 template <typename BaseType, typename IntermediateType, unsigned int FractionBits>
 const fixed<BaseType, IntermediateType, FractionBits> fixed<BaseType, IntermediateType, FractionBits>::HALF_PI(1.5707963267948966192313216916398);
+
+template <typename BaseType, typename IntermediateType, unsigned int FractionBits>
+const fixed<BaseType, IntermediateType, FractionBits> fixed<BaseType, IntermediateType, FractionBits>::TWO_PI(6.283185307179586476925286766559);
 
 //
 // Convenience typedefs
@@ -726,35 +730,40 @@ fixed<B, I, F> hypot(fixed<B, I, F> x, fixed<B, I, F> y) noexcept
 template <typename B, typename I, unsigned int F>
 fixed<B, I, F> sin(fixed<B, I, F> x) noexcept
 {
-    // Use Bhaskara I's sine approximation:
-    // It has a relative error of no more than 1.8% and has 0% error 
-    // at multiples of 90 degrees.
+    // This sine uses a fifth-order curve-fitting approximation originally
+    // described by Jasper Vijn on coranac.com which has a worst-case
+    // relative error of 0.07% (over [-pi:pi]).
     using Fixed = fixed<B, I, F>;
 
     // Turn x from [0..2*PI] domain into [0..4] domain
+    x = fmod(x, Fixed::TWO_PI);
     x = x / Fixed::HALF_PI;
 
     // Take x modulo one rotation, so [-4..+4].
-    x = fmod(x, Fixed(4));
     if (x < Fixed(0)) {
         x += Fixed(4);
     }
 
     int sign = +1;
     if (x > Fixed(2)) {
-        // The approximation below is only valid for [0..1].
+        // Reduce domain to [0..2].
         sign = -1;
         x -= Fixed(2);
     }
 
-    const auto y = x * (Fixed(2) - x);
-    return Fixed(sign) * (Fixed(4) * y / (Fixed(5) - y));
+    if (x > Fixed(1)) {
+        // Reduce domain to [0..1].
+        x = Fixed(2) - x;
+    }
+
+    const Fixed x2 = x*x;
+    return sign * x * (Fixed::PI - x2*(Fixed::TWO_PI - 5 - x2*(Fixed::PI - 3)))/2;
 }
 
 template <typename B, typename I, unsigned int F>
 inline fixed<B, I, F> cos(fixed<B, I, F> x) noexcept
 {
-    return sin(fixed<B, I, F>::HALF_PI - x);
+    return sin(fixed<B, I, F>::HALF_PI + x);
 }
 
 template <typename B, typename I, unsigned int F>
@@ -766,7 +775,7 @@ inline fixed<B, I, F> tan(fixed<B, I, F> x) noexcept
 
     // Tangent goes to infinity at 90 and -90 degrees.
     // We can't represent that with fixed-point maths.
-    assert(cx != Fixed(0));
+    assert(abs(cx).raw_value() > 1);
 
     return sin(x) / cx;
 }
