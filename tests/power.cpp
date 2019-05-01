@@ -267,10 +267,10 @@ TEST(power, pow_int)
 TEST(power, sqrt)
 {
     // For several values, verify that fpm::sqrt is close to std::sqrt.
-    using P = fpm::fixed<std::int32_t, std::int64_t, 12>;
+    using P = fpm::fixed<std::int32_t, std::int64_t, 16>;
 
     // Maximum relative error (percentage) we allow
-    constexpr auto MAX_ERROR_PERC = 0.001;
+    constexpr auto MAX_ERROR_PERC = 0.0003;
 
     // Small numbers
     for (double value = 0; value <= 100; value += 0.01)

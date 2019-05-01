@@ -37,6 +37,7 @@ public:
         : m_stream(filename)
     {
         m_stream.setf(std::ios::fixed);
+        m_stream.precision(12);
         m_stream << "x,real,Q24.8,Q20.12,Q16.16,Q8.24,fix16\n";
     }
 

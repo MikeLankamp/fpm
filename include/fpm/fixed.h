@@ -703,17 +703,34 @@ fixed<B, I, F> sqrt(fixed<B, I, F> x) noexcept
         return x;
     }
 
-    // Initial guess is half the exponent
-    auto guess = Fixed::from_raw_value(1 << ((detail::find_highest_bit(x.raw_value()) - F) / 2 + F));
+    // Finding the square root of an integer in base-2, from:
+    // https://en.wikipedia.org/wiki/Methods_of_computing_square_roots#Binary_numeral_system_.28base_2.29
 
-    // Do N rounds of Newton iterations
-    for (int i = 0; i < 3; ++i)
+    // Shift by F first because it's fixed-point.
+    I num = I{x.raw_value()} << F;
+    I res = 0;
+
+    // "bit" starts at the greatest power of four that's less than the argument.
+    for (I bit = I{1} << ((detail::find_highest_bit(x.raw_value()) + F) / 2 * 2); bit != 0; bit >>= 2)
     {
-        if (guess == Fixed(0))
-            break;
-        guess = (guess + x / guess) / 2;
+        if (num >= res + bit)
+        {
+            num -= res + bit;
+            res = (res >> 1) + bit;
+        }
+        else
+        {
+            res >>= 1;
+        }
     }
-    return guess;
+
+    // Round the last digit up if necessary
+    if (num > res)
+    {
+        res++;
+    }
+
+    return Fixed::from_raw_value(res);
 }
 
 template <typename B, typename I, unsigned int F>
