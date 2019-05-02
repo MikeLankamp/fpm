@@ -18,14 +18,14 @@ static Fix16 fix16_func(Fix16 f)
 // Constant for our trigonometry function argument.
 // Stored as volatile to force the compiler to read them and 
 // not optimize the entire expression into a constant.
-volatile double s_x = 0.678;
+static volatile int16_t s_x = 174;
 
 template <typename TValue>
 static void trigonometry(benchmark::State& state, TValue (*func)(TValue))
 {
 	for (auto _ : state)
 	{
-		TValue x{ static_cast<TValue>(s_x) };
+		TValue x{ static_cast<TValue>(s_x / 256.0) };
 		benchmark::DoNotOptimize(func(x));
 	}
 }

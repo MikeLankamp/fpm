@@ -18,15 +18,15 @@ static Fix16 fix16_func(Fix16 f)
 // Constants for our power function arguments.
 // Stored as volatile to force the compiler to read them and 
 // not optimize the entire expression into a constant.
-static volatile double s_x = 10.678;
-static volatile double s_y =  0.678;
+static volatile int16_t s_x = 2734;
+static volatile int16_t s_y =  174;
 
 template <typename TValue>
 static void power1(benchmark::State& state, TValue (*func)(TValue))
 {
 	for (auto _ : state)
 	{
-		TValue x{ static_cast<TValue>(s_x) };
+		TValue x{ static_cast<TValue>(s_x / 256.0) };
 		benchmark::DoNotOptimize(func(x));
 	}
 }
@@ -36,8 +36,8 @@ static void power2(benchmark::State& state, TValue (*func)(TValue, TValue))
 {
 	for (auto _ : state)
 	{
-		TValue x{ static_cast<TValue>(s_x) };
-		TValue y{ static_cast<TValue>(s_y) };
+		TValue x{ static_cast<TValue>(s_x / 256.0) };
+		TValue y{ static_cast<TValue>(s_y / 256.0) };
 		benchmark::DoNotOptimize(func(x, y));
 	}
 }

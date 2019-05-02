@@ -13,8 +13,8 @@
 // Constants for our arithmetic operands.
 // Stored as volatile to force the compiler to read them and 
 // not optimize the entire expression into a constant.
-static volatile int s_x = 1;
-static volatile int s_y = 2;
+static volatile int16_t s_x = 1543;
+static volatile int16_t s_y = 2552;
 
 template <typename TValue>
 static void arithmetic(benchmark::State& state, TValue (*func)(TValue, TValue))
