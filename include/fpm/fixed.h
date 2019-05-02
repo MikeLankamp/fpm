@@ -735,14 +735,12 @@ fixed<B, I, F> sqrt(fixed<B, I, F> x) noexcept
     // "bit" starts at the greatest power of four that's less than the argument.
     for (I bit = I{1} << ((detail::find_highest_bit(x.raw_value()) + F) / 2 * 2); bit != 0; bit >>= 2)
     {
-        if (num >= res + bit)
+        const I val = res + bit;
+        res >>= 1;
+        if (num >= val)
         {
-            num -= res + bit;
-            res = (res >> 1) + bit;
-        }
-        else
-        {
-            res >>= 1;
+            num -= val;
+            res += bit;
         }
     }
 
