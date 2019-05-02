@@ -666,7 +666,6 @@ template <typename B, typename I, unsigned int F>
 fixed<B, I, F> cbrt(fixed<B, I, F> x) noexcept
 {
     using Fixed = fixed<B, I, F>;
-    constexpr auto FRAC = B(1) << F;
 
     if (x == Fixed(0))
     {
@@ -678,18 +677,41 @@ fixed<B, I, F> cbrt(fixed<B, I, F> x) noexcept
     }
     assert(x >= Fixed(0));
 
-    // Initial guess is a third of the exponent
-    auto guess = Fixed::from_raw_value(1 << ((detail::find_highest_bit(x.raw_value()) - F) / 3 + F));
+    // Finding the cube root of an integer, taken from Hacker's Delight,
+    // based on the square root algorithm.
 
-    // Do N rounds of Newton iterations
-    for (int i = 0; i < 5; ++i)
+    // We start at the greatest power of eight that's less than the argument.
+    int ofs = ((detail::find_highest_bit(x.raw_value()) + 2*F) / 3 * 3);
+    I num = I{x.raw_value()};
+    I res = 0;
+
+    const auto do_round = [&]
     {
-        auto guess2 = guess * guess;
-        if (guess2 == Fixed(0))
-            break;
-        guess = (2 * guess + x / guess2) / 3;
-    }
-    return guess;
+        for (; ofs >= 0; ofs -= 3)
+        {
+            res += res;
+            const I val = (3*res*(res + 1) + 1) << ofs;
+            if (num >= val)
+            {
+                num -= val;
+                res++;
+            }
+        }
+    };
+
+    // We should shift by 2*F (since there are two multiplications), but that
+    // could overflow even the intermediate type, so we have to split the
+    // algorithm up in two rounds of F bits each. Each round will deplete
+    // 'num' digit by digit, so after a round we can shift it again.
+    num <<= F;
+    ofs -= F;
+    do_round();
+
+    num <<= F;
+    ofs += F;
+    do_round();
+
+    return Fixed::from_raw_value(res);
 }
 
 template <typename B, typename I, unsigned int F>

@@ -224,7 +224,7 @@ TEST(power, pow)
 TEST(power, pow_int)
 {
     // For several combinations of x and y, verify that fpm::pow is close to std::pow.
-    using P = fpm::fixed<std::int32_t, std::int64_t, 16>;
+    using P = fpm::fixed_16_16;
 
     // Maximum relative error (percentage) we allow
     constexpr auto MAX_ERROR_PERC = 0.01;
@@ -267,7 +267,7 @@ TEST(power, pow_int)
 TEST(power, sqrt)
 {
     // For several values, verify that fpm::sqrt is close to std::sqrt.
-    using P = fpm::fixed<std::int32_t, std::int64_t, 16>;
+    using P = fpm::fixed_16_16;
 
     // Maximum relative error (percentage) we allow
     constexpr auto MAX_ERROR_PERC = 0.0003;
@@ -293,13 +293,31 @@ TEST(power, sqrt)
 #endif
 }
 
+TEST(power, sqrt_24)
+{
+    // High-precision test of sqrt
+    using P = fpm::fixed_8_24;
+
+    // Maximum relative error (percentage) we allow
+    constexpr auto MAX_ERROR_PERC = 0.0000005;
+
+    // Small numbers
+    for (double value = 0; value <= 100; value += 0.01)
+    {
+        auto sqrt_real = std::sqrt(value);
+        auto sqrt_fixed = static_cast<double>(sqrt(P(value)));
+        EXPECT_TRUE(HasMaximumError(sqrt_fixed, sqrt_real, MAX_ERROR_PERC));
+    }
+
+}
+
 TEST(power, cbrt)
 {
     // For several values, verify that fpm::cbrt is close to std::cbrt.
-    using P = fpm::fixed<std::int32_t, std::int64_t, 12>;
+    using P = fpm::fixed_16_16;
 
     // Maximum relative error (percentage) we allow
-    constexpr auto MAX_ERROR_PERC = 0.001;
+    constexpr auto MAX_ERROR_PERC = 0.00005;
 
     // Small numbers
     for (double value = -100; value <= 100; value += 0.125)
@@ -319,3 +337,19 @@ TEST(power, cbrt)
     }
 }
 
+TEST(power, cbrt_24)
+{
+    // High-precision test of cbrt
+    using P = fpm::fixed_8_24;
+
+    // Maximum relative error (percentage) we allow
+    constexpr auto MAX_ERROR_PERC = 0.0000005;
+
+    // Small numbers
+    for (double value = -100; value <= 100; value += 0.125)
+    {
+        auto cbrt_real = std::cbrt(value);
+        auto cbrt_fixed = static_cast<double>(cbrt(P(value)));
+        EXPECT_TRUE(HasMaximumError(cbrt_fixed, cbrt_real, MAX_ERROR_PERC));
+    }
+}
