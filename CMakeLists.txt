@@ -16,6 +16,8 @@ add_executable(fpm-test
   tests/arithmetic.cpp
   tests/arithmetic_int.cpp
   tests/basic_math.cpp
+  tests/constants.cpp
+  tests/conversion.cpp
   tests/classification.cpp
   tests/detail.cpp
   tests/manip.cpp

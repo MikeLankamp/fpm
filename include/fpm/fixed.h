@@ -19,6 +19,7 @@ class fixed
     static_assert(std::is_integral<BaseType>::value, "BaseType must be an integral type");
     static_assert(FractionBits > 0, "FractionBits must be greater than zero");
     static_assert(FractionBits <= sizeof(BaseType) * 8, "BaseType must at least be able to contain entire fraction");
+    static_assert(FractionBits <= 62, "Fraction may be no more than 62 bits");
     static_assert(sizeof(IntermediateType) > sizeof(BaseType), "IntermediateType must be larger than BaseType");
     static_assert(std::is_signed<IntermediateType>::value == std::is_signed<BaseType>::value, "IntermediateType must have same signedness as BaseType");
 
@@ -28,11 +29,6 @@ class fixed
     constexpr inline fixed(BaseType val, raw_construct_tag) noexcept : m_value(val) {}
 
 public:
-    static const fixed E;
-    static const fixed PI;
-    static const fixed HALF_PI;
-    static const fixed TWO_PI;
-
     constexpr inline fixed() noexcept {}
 
     // Converts an integral number to the fixed-point type.
@@ -70,12 +66,42 @@ public:
         return m_value;
     }
 
+    //! Constructs a fixed-point number from another fixed-point number.
+    //! \tparam NumFractionBits the number of bits used by the fraction in \a value.
+    //! \param value the integer fixed-point number
+    template <int NumFractionBits, typename T, typename std::enable_if<(NumFractionBits > FractionBits)>::type* = nullptr>
+    static constexpr inline fixed from_fixed_point(T value) noexcept
+    {
+        // To correctly round the last bit in the result, we need one more bit of information.
+        // We do this by multiplying by two before dividing and adding the LSB to the real result.
+        return fixed(static_cast<BaseType>(
+             value / (T(1) << (NumFractionBits - FractionBits)) +
+            (value / (T(1) << (NumFractionBits - FractionBits - 1)) % 2)),
+            raw_construct_tag{});
+    }
+
+    template <int NumFractionBits, typename T, typename std::enable_if<(NumFractionBits <= FractionBits)>::type* = nullptr>
+    static constexpr inline fixed from_fixed_point(T value) noexcept
+    {
+        return fixed(static_cast<BaseType>(
+            value * (T(1) << (FractionBits - NumFractionBits))),
+            raw_construct_tag{});
+    }
+
     // Constructs a fixed-point number from its raw underlying value.
     // Do not use this unless you know what you're doing.
     static constexpr inline fixed from_raw_value(BaseType value) noexcept
     {
         return fixed(value, raw_construct_tag{});
     }
+
+    //
+    // Constants
+    //
+    static constexpr fixed E = from_fixed_point<61>(6267931151224907085ll);
+    static constexpr fixed PI = from_fixed_point<61>(7244019458077122842ll);
+    static constexpr fixed HALF_PI = from_fixed_point<62>(7244019458077122842ll);
+    static constexpr fixed TWO_PI = from_fixed_point<60>(7244019458077122842ll);
 
     //
     // Arithmetic member operators
@@ -152,16 +178,16 @@ private:
 };
 
 template <typename BaseType, typename IntermediateType, unsigned int FractionBits>
-const fixed<BaseType, IntermediateType, FractionBits> fixed<BaseType, IntermediateType, FractionBits>::E(2.7182818284590452353602874713527);
+constexpr fixed<BaseType, IntermediateType, FractionBits> fixed<BaseType, IntermediateType, FractionBits>::E;
 
 template <typename BaseType, typename IntermediateType, unsigned int FractionBits>
-const fixed<BaseType, IntermediateType, FractionBits> fixed<BaseType, IntermediateType, FractionBits>::PI(3.1415926535897932384626433832795);
+constexpr fixed<BaseType, IntermediateType, FractionBits> fixed<BaseType, IntermediateType, FractionBits>::PI;
 
 template <typename BaseType, typename IntermediateType, unsigned int FractionBits>
-const fixed<BaseType, IntermediateType, FractionBits> fixed<BaseType, IntermediateType, FractionBits>::HALF_PI(1.5707963267948966192313216916398);
+constexpr fixed<BaseType, IntermediateType, FractionBits> fixed<BaseType, IntermediateType, FractionBits>::HALF_PI;
 
 template <typename BaseType, typename IntermediateType, unsigned int FractionBits>
-const fixed<BaseType, IntermediateType, FractionBits> fixed<BaseType, IntermediateType, FractionBits>::TWO_PI(6.283185307179586476925286766559);
+constexpr fixed<BaseType, IntermediateType, FractionBits> fixed<BaseType, IntermediateType, FractionBits>::TWO_PI;
 
 //
 // Convenience typedefs

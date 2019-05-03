@@ -288,12 +288,12 @@ fixed<B, I, F> exp(fixed<B, I, F> x) noexcept
     x -= x_int;
     assert(x >= Fixed(0) && x < Fixed(1));
 
-    constexpr Fixed fA { 1.3903728105644451e-2 };
-    constexpr Fixed fB { 3.4800571158543038e-2 };
-    constexpr Fixed fC { 1.7040197373796334e-1 };
-    constexpr Fixed fD { 4.9909609871464493e-1 };
-    constexpr Fixed fE { 1.0000794567422495 };
-    constexpr Fixed fF { 9.9999887043019773e-1 };
+    constexpr auto fA = Fixed::template from_fixed_point<63>( 128239257017632854ll); // 1.3903728105644451e-2
+    constexpr auto fB = Fixed::template from_fixed_point<63>( 320978614890280666ll); // 3.4800571158543038e-2
+    constexpr auto fC = Fixed::template from_fixed_point<63>(1571680799599592947ll); // 1.7040197373796334e-1
+    constexpr auto fD = Fixed::template from_fixed_point<63>(4603349000587966862ll); // 4.9909609871464493e-1
+    constexpr auto fE = Fixed::template from_fixed_point<62>(4612052447974689712ll); // 1.0000794567422495
+    constexpr auto fF = Fixed::template from_fixed_point<63>(9223361618412247875ll); // 9.9999887043019773e-1
     return pow(Fixed::E, x_int) * (((((fA * x + fB) * x + fC) * x + fD) * x + fE) * x + fF);
 }
 
@@ -309,12 +309,12 @@ fixed<B, I, F> exp2(fixed<B, I, F> x) noexcept
     x -= x_int;
     assert(x >= Fixed(0) && x < Fixed(1));
 
-    constexpr Fixed fA { 1.8964611454333148e-3 };
-    constexpr Fixed fB { 8.9428289841091295e-3 };
-    constexpr Fixed fC { 5.5866246304520701e-2 };
-    constexpr Fixed fD { 2.4013971109076949e-1 };
-    constexpr Fixed fE { 6.9315475247516736e-1 };
-    constexpr Fixed fF { 9.9999989311082668e-1 };
+    constexpr auto fA = Fixed::template from_fixed_point<63>(  17491766697771214ll); // 1.8964611454333148e-3
+    constexpr auto fB = Fixed::template from_fixed_point<63>(  82483038782406547ll); // 8.9428289841091295e-3
+    constexpr auto fC = Fixed::template from_fixed_point<63>( 515275173969157690ll); // 5.5866246304520701e-2
+    constexpr auto fD = Fixed::template from_fixed_point<63>(2214897896212987987ll); // 2.4013971109076949e-1
+    constexpr auto fE = Fixed::template from_fixed_point<63>(6393224161192452326ll); // 6.9315475247516736e-1
+    constexpr auto fF = Fixed::template from_fixed_point<63>(9223371050976163566ll); // 9.9999989311082668e-1
     return Fixed(1 << x_int) * (((((fA * x + fB) * x + fC) * x + fD) * x + fE) * x + fF);
 }
 
@@ -341,12 +341,12 @@ fixed<B, I, F> log2(fixed<B, I, F> x) noexcept
     x = Fixed::from_raw_value(value);
     assert(x >= Fixed(1) && x < Fixed(2));
 
-    constexpr Fixed fA {  4.4873610194131727e-2 };
-    constexpr Fixed fB { -4.1656368651734915e-1 };
-    constexpr Fixed fC {  1.6311487636297217 };
-    constexpr Fixed fD { -3.5507929249026341 };
-    constexpr Fixed fE {  5.0917108110420042 };
-    constexpr Fixed fF { -2.8003640347009253 };
+    constexpr auto fA = Fixed::template from_fixed_point<63>(  413886001457275979ll); //  4.4873610194131727e-2
+    constexpr auto fB = Fixed::template from_fixed_point<63>(-3842121857793256941ll); // -4.1656368651734915e-1
+    constexpr auto fC = Fixed::template from_fixed_point<62>( 7522345947206307744ll); //  1.6311487636297217
+    constexpr auto fD = Fixed::template from_fixed_point<61>(-8187571043052183818ll); // -3.5507929249026341
+    constexpr auto fE = Fixed::template from_fixed_point<60>( 5870342889289496598ll); //  5.0917108110420042
+    constexpr auto fF = Fixed::template from_fixed_point<61>(-6457199832668582866ll); // -2.8003640347009253
     return Fixed(highest - F) + (((((fA * x + fB) * x + fC) * x + fD) * x + fE) * x + fF);
 }
 
@@ -539,9 +539,9 @@ fixed<B, I, F> atan(fixed<B, I, F> x) noexcept
         return Fixed::HALF_PI - atan(Fixed(1) / x);
     }
 
-    const Fixed fA(0.0776509570923569);
-    const Fixed fB(-0.287434475393028);
-    const Fixed fC(0.995181681698119);   // PI/4 - A - B
+    constexpr auto fA = Fixed::template from_fixed_point<63>(  716203666280654660ll); //  0.0776509570923569
+    constexpr auto fB = Fixed::template from_fixed_point<63>(-2651115102768076601ll); // -0.287434475393028
+    constexpr auto fC = Fixed::template from_fixed_point<63>( 9178930894564541004ll); //  0.995181681698119  (PI/4 - A - B)
 
     const auto xx = x * x;
     return ((fA*xx + fB)*xx + fC)*x;
