@@ -1,5 +1,5 @@
 #include "common.h"
-#include <cstdint>
+#include <fpm/math.h>
 
 TEST(trigonometry, sin)
 {

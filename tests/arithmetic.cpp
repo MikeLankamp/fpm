@@ -1,5 +1,4 @@
 #include "common.h"
-#include <cstdint>
 
 TEST(arithmethic, negation)
 {

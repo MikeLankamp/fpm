@@ -1,4 +1,5 @@
 #include <fpm/fixed.h>
+#include <fpm/math.h>
 #include <fixmath.h>
 #include <iostream>
 #include <fstream>

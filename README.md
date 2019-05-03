@@ -27,6 +27,8 @@ int main() {
 }
 ```
 
+To use the fixed-point equivalents of the `<math.h>` functions such as `sqrt`, `sin` and `log`, include the header `<fpm/math.h>`.
+
 ## Documentation
 Please refer to the [documentation](docs/index.md) for detailed information how to use `fpm`, its performance and its accuracy
 compared to native floating pointer numbers.

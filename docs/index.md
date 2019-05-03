@@ -32,6 +32,19 @@ namespace fpm {
 }
 ```
 
+## Mathematical functions
+FPM offers the header `<fpm/math.h>` with mathematical functions that operate on its fixed-point types, similar to `<math.h>` for floating-point types.
+The available functions for fixed-point types include:
+* basic functions: `abs`, `fmod`, `remainder`, `copysign`, `remquo`, etc.
+* trigonometry functions: `sin`, `cos`, `tan`, `asin`, `acos`, `atan` and `atan2`.
+* exponential functions: `exp`, `exp2`, `expm1`, `log`, `log10`, `log2` and `log1p`.
+* power functions: `pow`, `sqrt`, `cbrt` and `hypot`.
+* classification functions: `fpclassify`, `isnormal`, `isnan`, `isnormal`, etc.
+
+Notes:
+* all functions are in the `fpm` namespace.
+* certain functions will always return the same value (e.g. `isnan` and `isinf` will always return false).
+* be mindful of a function's domain and range: the result of `pow` can quickly overflow with certain inputs. On the other hand, trigonometry functions such as `sin` require more bits in the fraction for accurate results.
 
 ## Conversion to and from float
 The intent behind `fpm` is to replace floats for purposes of performance or portability. Thus, it guards against accidental usage of floats by requiring explicit conversion:

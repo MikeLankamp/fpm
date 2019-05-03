@@ -1,5 +1,6 @@
 #include <benchmark/benchmark.h>
 #include <fpm/fixed.h>
+#include <fpm/math.h>
 #include <fixmath.h>
 
 #define BENCHMARK_TEMPLATE1_CAPTURE(func, test_case_name, a, ...)   \

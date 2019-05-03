@@ -1,4 +1,5 @@
 #include "common.h"
+#include <fpm/math.h>
 
 TEST(classification, fpclassify)
 {
