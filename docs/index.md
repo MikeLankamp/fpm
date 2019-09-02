@@ -66,6 +66,13 @@ int e = static_cast<int>(b);   // OK: explicit conversion to int
 ```
 You must still guard against underflow and overflow, though.
 
+## Common constants
+The following static member functions in the `fpm::fixed` class provide common mathematical constants in the fixed type:
+* `e()`: _e_, roughly equal to 2.71828183.
+* `pi()`: _π_, roughly equal to 3.14159265.
+* `half_pi()`: _½π_, roughly equal to 1.57079633.
+* `two_pi()`: _2π_, roughly equal to 6.2831853.
+
 ## Accuracy and performance
 Please refer to the pages for [accuracy](accuracy.md) and [performance](performance.md) results.
 
