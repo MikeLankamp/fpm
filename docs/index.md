@@ -9,7 +9,7 @@ namespace fpm {
     class fixed;
 }
 ```
-**Note:** It's recommended to use a *signed* integer type for `BaseType` (and `IntermediateType`) to emulate floating-point numbers 
+**Note:** It's recommended to use a *signed* integer type for `BaseType` (and `IntermediateType`) to emulate floating-point numbers
 and to allow the compiler to optimize the computations, since overflow and underflow are undefined
 for signed integer types.
 
@@ -56,7 +56,7 @@ float d = b;                     // Error: implicit conversion to float
 float e = static_cast<float>(b); // OK: explicit conversion to float
 ```
 
-For integers, this still applies to initialization, but arithmetic operations *can* use integers: 
+For integers, this still applies to initialization, but arithmetic operations *can* use integers:
 ```c++
 fpm::fixed_16_16 a = 2;        // Error: implicit construction from int
 fpm::fixed_16_16 b { 2 };      // OK: explicit construction from int
@@ -65,6 +65,21 @@ int d = b;                     // Error: requires explicit conversion
 int e = static_cast<int>(b);   // OK: explicit conversion to int
 ```
 You must still guard against underflow and overflow, though.
+
+## Printing fixed-point numbers
+The `<fpm/ios.h>` header provides streaming operators. Simply stream an expression of type `fpm::fixed` to a `std::ostream`.
+
+For instance, the following program prints `"===3.142e+02"`:
+```
+#include <fpm/fixed.h>
+#include <fpm/ios.h>
+
+int main() {
+    fpm::fixed_16_16 x { 314.1516 };
+    std::cout << std::setw(12) << std::setfill('=') << std::setprecision(3) << std::scientific << x << std::endl;
+    return 0;
+}
+```
 
 ## Common constants
 The following static member functions in the `fpm::fixed` class provide common mathematical constants in the fixed type:

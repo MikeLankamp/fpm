@@ -20,12 +20,13 @@ add_executable(fpm-test
   tests/conversion.cpp
   tests/classification.cpp
   tests/detail.cpp
+  tests/ios.cpp
   tests/manip.cpp
   tests/nearest.cpp
   tests/power.cpp
   tests/trigonometry.cpp
 )
-
+set_target_properties(fpm-test PROPERTIES CXX_STANDARD 14)
 target_link_libraries(fpm-test PRIVATE fpm gtest_main)
 gtest_add_tests(TARGET fpm-test)
 
