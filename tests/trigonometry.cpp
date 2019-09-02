@@ -54,8 +54,8 @@ TEST(trigonometry, tan)
     }
 
 #ifndef NDEBUG
-    EXPECT_DEATH(tan(P::PI/2), "");
-    EXPECT_DEATH(tan(-P::PI/2), "");
+    EXPECT_DEATH(tan(P::pi()/2), "");
+    EXPECT_DEATH(tan(-P::pi()/2), "");
 #endif
 }
 

@@ -98,10 +98,10 @@ public:
     //
     // Constants
     //
-    static constexpr fixed E = from_fixed_point<61>(6267931151224907085ll);
-    static constexpr fixed PI = from_fixed_point<61>(7244019458077122842ll);
-    static constexpr fixed HALF_PI = from_fixed_point<62>(7244019458077122842ll);
-    static constexpr fixed TWO_PI = from_fixed_point<60>(7244019458077122842ll);
+    static constexpr fixed e() { return from_fixed_point<61>(6267931151224907085ll); }
+    static constexpr fixed pi() { return from_fixed_point<61>(7244019458077122842ll); }
+    static constexpr fixed half_pi() { return from_fixed_point<62>(7244019458077122842ll); }
+    static constexpr fixed two_pi() { return from_fixed_point<60>(7244019458077122842ll); }
 
     //
     // Arithmetic member operators
@@ -176,18 +176,6 @@ public:
 private:
     BaseType m_value;
 };
-
-template <typename BaseType, typename IntermediateType, unsigned int FractionBits>
-constexpr fixed<BaseType, IntermediateType, FractionBits> fixed<BaseType, IntermediateType, FractionBits>::E;
-
-template <typename BaseType, typename IntermediateType, unsigned int FractionBits>
-constexpr fixed<BaseType, IntermediateType, FractionBits> fixed<BaseType, IntermediateType, FractionBits>::PI;
-
-template <typename BaseType, typename IntermediateType, unsigned int FractionBits>
-constexpr fixed<BaseType, IntermediateType, FractionBits> fixed<BaseType, IntermediateType, FractionBits>::HALF_PI;
-
-template <typename BaseType, typename IntermediateType, unsigned int FractionBits>
-constexpr fixed<BaseType, IntermediateType, FractionBits> fixed<BaseType, IntermediateType, FractionBits>::TWO_PI;
 
 //
 // Convenience typedefs

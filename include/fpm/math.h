@@ -294,7 +294,7 @@ fixed<B, I, F> exp(fixed<B, I, F> x) noexcept
     constexpr auto fD = Fixed::template from_fixed_point<63>(4603349000587966862ll); // 4.9909609871464493e-1
     constexpr auto fE = Fixed::template from_fixed_point<62>(4612052447974689712ll); // 1.0000794567422495
     constexpr auto fF = Fixed::template from_fixed_point<63>(9223361618412247875ll); // 9.9999887043019773e-1
-    return pow(Fixed::E, x_int) * (((((fA * x + fB) * x + fC) * x + fD) * x + fE) * x + fF);
+    return pow(Fixed::e(), x_int) * (((((fA * x + fB) * x + fC) * x + fD) * x + fE) * x + fF);
 }
 
 template <typename B, typename I, unsigned int F>
@@ -354,7 +354,7 @@ template <typename B, typename I, unsigned int F>
 fixed<B, I, F> log(fixed<B, I, F> x) noexcept
 {
     using Fixed = fixed<B, I, F>;
-    return log2(x) / log2(Fixed::E);
+    return log2(x) / log2(Fixed::e());
 }
 
 template <typename B, typename I, unsigned int F>
@@ -481,8 +481,8 @@ fixed<B, I, F> sin(fixed<B, I, F> x) noexcept
     using Fixed = fixed<B, I, F>;
 
     // Turn x from [0..2*PI] domain into [0..4] domain
-    x = fmod(x, Fixed::TWO_PI);
-    x = x / Fixed::HALF_PI;
+    x = fmod(x, Fixed::two_pi());
+    x = x / Fixed::half_pi();
 
     // Take x modulo one rotation, so [-4..+4].
     if (x < Fixed(0)) {
@@ -502,13 +502,13 @@ fixed<B, I, F> sin(fixed<B, I, F> x) noexcept
     }
 
     const Fixed x2 = x*x;
-    return sign * x * (Fixed::PI - x2*(Fixed::TWO_PI - 5 - x2*(Fixed::PI - 3)))/2;
+    return sign * x * (Fixed::pi() - x2*(Fixed::two_pi() - 5 - x2*(Fixed::pi() - 3)))/2;
 }
 
 template <typename B, typename I, unsigned int F>
 inline fixed<B, I, F> cos(fixed<B, I, F> x) noexcept
 {
-    return sin(fixed<B, I, F>::HALF_PI + x);
+    return sin(fixed<B, I, F>::half_pi() + x);
 }
 
 template <typename B, typename I, unsigned int F>
@@ -536,7 +536,7 @@ fixed<B, I, F> atan(fixed<B, I, F> x) noexcept
 
     if (x > Fixed(1))
     {
-        return Fixed::HALF_PI - atan(Fixed(1) / x);
+        return Fixed::half_pi() - atan(Fixed(1) / x);
     }
 
     constexpr auto fA = Fixed::template from_fixed_point<63>(  716203666280654660ll); //  0.0776509570923569
@@ -556,7 +556,7 @@ fixed<B, I, F> asin(fixed<B, I, F> x) noexcept
     const auto yy = Fixed(1) - x * x;
     if (yy == Fixed(0))
     {
-        return copysign(Fixed::HALF_PI, x);
+        return copysign(Fixed::half_pi(), x);
     }
     return atan(x / sqrt(yy));
 }
@@ -569,7 +569,7 @@ fixed<B, I, F> acos(fixed<B, I, F> x) noexcept
 
     if (x == Fixed(-1))
     {
-        return Fixed::PI;
+        return Fixed::pi();
     }
     const auto yy = Fixed(1) - x * x;
     return Fixed(2)*atan(sqrt(yy) / (Fixed(1) + x));
@@ -582,12 +582,12 @@ fixed<B, I, F> atan2(fixed<B, I, F> y, fixed<B, I, F> x) noexcept
     if (x == Fixed(0))
     {
         assert(y != Fixed(0));
-        return (y > Fixed(0)) ? Fixed::HALF_PI : -Fixed::HALF_PI;
+        return (y > Fixed(0)) ? Fixed::half_pi() : -Fixed::half_pi();
     }
     auto ret = atan(y / x);
     if (x < Fixed(0))
     {
-        return (y >= Fixed(0)) ? ret + Fixed::PI : ret - Fixed::PI;
+        return (y >= Fixed(0)) ? ret + Fixed::pi() : ret - Fixed::pi();
     }
     return ret;
 }
