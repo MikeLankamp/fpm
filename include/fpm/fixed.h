@@ -29,7 +29,7 @@ class fixed
     constexpr inline fixed(BaseType val, raw_construct_tag) noexcept : m_value(val) {}
 
 public:
-    constexpr inline fixed() noexcept {}
+    inline fixed() noexcept {}
 
     // Converts an integral number to the fixed-point type.
     // Like static_cast, this truncates bits that don't fit.
@@ -69,7 +69,7 @@ public:
     //! Constructs a fixed-point number from another fixed-point number.
     //! \tparam NumFractionBits the number of bits used by the fraction in \a value.
     //! \param value the integer fixed-point number
-    template <int NumFractionBits, typename T, typename std::enable_if<(NumFractionBits > FractionBits)>::type* = nullptr>
+    template <unsigned int NumFractionBits, typename T, typename std::enable_if<(NumFractionBits > FractionBits)>::type* = nullptr>
     static constexpr inline fixed from_fixed_point(T value) noexcept
     {
         // To correctly round the last bit in the result, we need one more bit of information.
@@ -80,7 +80,7 @@ public:
             raw_construct_tag{});
     }
 
-    template <int NumFractionBits, typename T, typename std::enable_if<(NumFractionBits <= FractionBits)>::type* = nullptr>
+    template <unsigned int NumFractionBits, typename T, typename std::enable_if<(NumFractionBits <= FractionBits)>::type* = nullptr>
     static constexpr inline fixed from_fixed_point(T value) noexcept
     {
         return fixed(static_cast<BaseType>(

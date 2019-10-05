@@ -419,7 +419,7 @@ fixed<B, I, F> cbrt(fixed<B, I, F> x) noexcept
     ofs += F;
     do_round();
 
-    return Fixed::from_raw_value(res);
+    return Fixed::from_raw_value(static_cast<B>(res));
 }
 
 template <typename B, typename I, unsigned int F>
@@ -458,7 +458,7 @@ fixed<B, I, F> sqrt(fixed<B, I, F> x) noexcept
         res++;
     }
 
-    return Fixed::from_raw_value(res);
+    return Fixed::from_raw_value(static_cast<B>(res));
 }
 
 template <typename B, typename I, unsigned int F>

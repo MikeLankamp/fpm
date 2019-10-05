@@ -30,6 +30,9 @@ static Fix16 acos(Fix16 x) { return x.acos(); }
 static Fix16 atan(Fix16 x) { return x.atan(); }
 static Fix16 atan2(Fix16 x, Fix16 y) { return x.atan2(y); }
 static Fix16 sqrt(Fix16 x) { return x.sqrt(); }
+static Fix16 exp(Fix16 x) { return fix16_exp(x); }
+static Fix16 log(Fix16 x) { return fix16_log(x); }
+static Fix16 log2(Fix16 x) { return fix16_log2(x); }
 
 class csv_output
 {
@@ -138,7 +141,7 @@ int main()
     {
         const auto val = i / 10.0;
         check_all(out_exp, val, [](auto x) { return exp(x); }, val);
-        check_all(out_exp2, val, [](auto x) { return exp2(x); }, val);
+        check_fpm(out_exp2, val, [](auto x) { return exp2(x); }, val);
         check_fpm(out_pow, val, [](auto x) { return pow(decltype(x){3.36}, x); }, val);
     }
 
@@ -150,6 +153,6 @@ int main()
         const auto val = i / 10.0;
         check_all(out_log, val, [](auto x) { return log(x); }, val);
         check_all(out_log2, val, [](auto x) { return log2(x); }, val);
-        check_all(out_log10, val, [](auto x) { return log10(x); }, val);
+        check_fpm(out_log10, val, [](auto x) { return log10(x); }, val);
     }
 }
