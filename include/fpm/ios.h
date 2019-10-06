@@ -349,7 +349,7 @@ std::basic_ostream<CharT>& operator<<(std::basic_ostream<CharT>& os, fixed<B, I,
         std::size_t group = 0;
         auto p = point != buffer.end() ? point : end;
         auto size = static_cast<int>(grouping[group]);
-        while (size > 0 && size < CHAR_MAX && p - size > digits_start) {
+        while (size > 0 && size < CHAR_MAX && p - digits_start > size) {
             p -= size;
             insert_character(p, thousands_sep);
             if (group < grouping.size() - 1) {
@@ -424,14 +424,15 @@ std::basic_ostream<CharT>& operator<<(std::basic_ostream<CharT>& os, fixed<B, I,
 
     // Pad the buffer if necessary.
     // Note that the length of trailing zeros is counted towards the length of the content.
-    if (end + trailing_zeros_count >= buffer.begin() + width)
+	const auto content_size = end - buffer.begin() + trailing_zeros_count;
+    if (content_size >= width)
     {
         // Buffer needs no padding, output as-is
         put_range(buffer.begin(), end);
     }
     else
     {
-        const auto pad_size = buffer.begin() + width - (end + trailing_zeros_count);
+		const auto pad_size = width - content_size;
         switch (adjustfield)
         {
         case std::ios_base::left:
