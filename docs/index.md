@@ -70,9 +70,11 @@ You must still guard against underflow and overflow, though.
 The `<fpm/ios.h>` header provides streaming operators. Simply stream an expression of type `fpm::fixed` to a `std::ostream`.
 
 For instance, the following program prints `"===3.142e+02"`:
-```
+```c++
 #include <fpm/fixed.h>
 #include <fpm/ios.h>
+#include <iostream>
+#include <iomanip>
 
 int main() {
     fpm::fixed_16_16 x { 314.1516 };

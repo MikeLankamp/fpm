@@ -18,11 +18,13 @@ To use `fpm`, simply include its header `<fpm/fixed.h>` and use the `fpm::fixed_
 types as if they were native floating-pointer types:
 ```c++
 #include <fpm/fixed.h>
+#include <fpm/math.h>
+#include <fpm/ios.h>
 #include <iostream>
 
 int main() {
     fpm::fixed_16_16 x{2.5};
-    std::cout << "The cosine of 2.5 radians is: " << static_cast<float>(cos(x)) << std::endl;
+    std::cout << "The cosine of 2.5 radians is: " << cos(x) << std::endl;
     return 0;
 }
 ```
