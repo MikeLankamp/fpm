@@ -4,6 +4,7 @@
 #include "fixed.h"
 #include "math.h"
 #include <array>
+#include <algorithm>
 #include <climits>
 #include <limits>
 #include <ios>
