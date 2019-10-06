@@ -17,10 +17,10 @@ then fixed-point numbers might be a solution for you.
 To use `fpm`, simply include its header `<fpm/fixed.h>` and use the `fpm::fixed_16_16`, `fpm::fixed_24_8` or `fpm::fixed_8_24`
 types as if they were native floating-pointer types:
 ```c++
-#include <fpm/fixed.h>
-#include <fpm/math.h>
-#include <fpm/ios.h>
-#include <iostream>
+#include <fpm/fixed.h>  // For fpm::fixed_16_16
+#include <fpm/math.h>   // For cos
+#include <fpm/ios.h>    // For operator<<
+#include <iostream>     // For std::cout
 
 int main() {
     fpm::fixed_16_16 x{2.5};
@@ -30,6 +30,7 @@ int main() {
 ```
 
 To use the fixed-point equivalents of the `<math.h>` functions such as `sqrt`, `sin` and `log`, include the header `<fpm/math.h>`.
+To stream fixed-point values to or from streams, include the header `<fpm/ios.h>`.
 
 ## Documentation
 Please refer to the [documentation](docs/index.md) for detailed information how to use `fpm`, its performance and its accuracy
