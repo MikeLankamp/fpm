@@ -48,10 +48,6 @@ protected:
         // and---even worse---applies the grouping through the "0x" prefix. This produces
         // interesting results such as "0,x1.8p+3" instead of "0x1.8p+3" with a grouping
         // of "\002", or "0,x,1.8p+3" with a grouping of "\001".
-        //
-        // So we filter out the thousands separator in this case.
-        // Note: this will produce the wrong result if the thousands separator is reused in
-        //       another place.
         const auto& numpunct = std::use_facet<std::numpunct<char>>(stream.getloc());
 		if (floatfield == (std::ios::fixed | std::ios::scientific) && !numpunct.grouping().empty())
 		{
