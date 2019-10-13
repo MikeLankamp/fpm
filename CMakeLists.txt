@@ -22,9 +22,9 @@ add_executable(fpm-test
   tests/conversion.cpp
   tests/classification.cpp
   tests/detail.cpp
-  tests/ios.cpp
   tests/manip.cpp
   tests/nearest.cpp
+  tests/output.cpp
   tests/power.cpp
   tests/trigonometry.cpp
 )
