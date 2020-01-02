@@ -66,8 +66,8 @@ int e = static_cast<int>(b);   // OK: explicit conversion to int
 ```
 You must still guard against underflow and overflow, though.
 
-## Printing fixed-point numbers
-The `<fpm/ios.h>` header provides streaming operators. Simply stream an expression of type `fpm::fixed` to a `std::ostream`.
+## Printing and reading fixed-point numbers
+The `<fpm/ios.h>` header provides streaming operators. Simply stream an expression of type `fpm::fixed` to or from a `std::ostream`.
 
 For instance, the following program prints `"===3.142e+02"`:
 ```c++
@@ -82,6 +82,10 @@ int main() {
     return 0;
 }
 ```
+
+Reading fixed point numbers works similarly, by streaming `fpm::fixed` types from a `std::istream`.
+
+`fpm`'s implementation of the streaming operators emulates streaming native floats as closely as possible.
 
 ## Common constants
 The following static member functions in the `fpm::fixed` class provide common mathematical constants in the fixed type:

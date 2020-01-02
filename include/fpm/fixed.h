@@ -4,6 +4,7 @@
 #include <cassert>
 #include <cmath>
 #include <cstdint>
+#include <limits>
 #include <type_traits>
 
 namespace fpm
@@ -102,6 +103,9 @@ public:
     static constexpr fixed pi() { return from_fixed_point<61>(7244019458077122842ll); }
     static constexpr fixed half_pi() { return from_fixed_point<62>(7244019458077122842ll); }
     static constexpr fixed two_pi() { return from_fixed_point<60>(7244019458077122842ll); }
+
+    static constexpr fixed max() { return from_raw_value(std::numeric_limits<BaseType>::max()); };
+    static constexpr fixed min() { return from_raw_value(std::numeric_limits<BaseType>::min()); };
 
     //
     // Arithmetic member operators

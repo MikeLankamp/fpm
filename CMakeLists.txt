@@ -22,6 +22,7 @@ add_executable(fpm-test
   tests/conversion.cpp
   tests/classification.cpp
   tests/detail.cpp
+  tests/input.cpp
   tests/manip.cpp
   tests/nearest.cpp
   tests/output.cpp

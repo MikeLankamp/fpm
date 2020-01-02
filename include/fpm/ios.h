@@ -8,6 +8,7 @@
 #include <climits>
 #include <limits>
 #include <ios>
+#include <vector>
 
 namespace fpm
 {
@@ -460,6 +461,284 @@ std::basic_ostream<CharT>& operator<<(std::basic_ostream<CharT>& os, fixed<B, I,
     os.width(0);
 
     return os;
+}
+
+
+template <typename CharT, class Traits, typename B, typename I, unsigned int F>
+std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>& is, fixed<B, I, F>& x)
+{
+    typename std::basic_istream<CharT, Traits>::sentry sentry(is);
+    if (!sentry)
+    {
+        return is;
+    }
+
+    const auto& ctype = std::use_facet<std::ctype<CharT>>(is.getloc());
+    const auto& numpunct = std::use_facet<std::numpunct<CharT>>(is.getloc());
+
+    bool thousands_separator_allowed = false;
+    const bool supports_thousands_separators = !numpunct.grouping().empty();
+
+    const auto& is_valid_character = [](char ch) {
+        // Note: allowing ['p', 'i', 'n', 't', 'y'] is technically in violation of the spec (we are emulating std::num_get),
+        // but otherwise we cannot parse hexfloats and "infinity". This is a known issue with the spec (LWG #2381).
+        return std::isxdigit(ch) ||
+            ch == 'x' || ch == 'X' || ch == 'p' || ch == 'P' ||
+            ch == 'i' || ch == 'I' || ch == 'n' || ch == 'N' ||
+            ch == 't' || ch == 'T' || ch == 'y' || ch == 'Y' ||
+            ch == '-' || ch == '+';
+    };
+
+    const auto& peek = [&]() {
+        for(;;) {
+            auto ch = is.rdbuf()->sgetc();
+            if (ch == Traits::eof()) {
+                is.setstate(std::ios::eofbit);
+                return '\0';
+            }
+            if (ch == numpunct.decimal_point()) {
+                return '.';
+            }
+            if (ch == numpunct.thousands_sep())
+            {
+                if (!supports_thousands_separators || !thousands_separator_allowed) {
+                    return '\0';
+                }
+                // Ignore valid thousands separators
+                is.rdbuf()->sbumpc();
+                continue;
+            }
+            auto res = ctype.narrow(ch, 0);
+            if (!is_valid_character(res)) {
+                // Invalid character: end input
+                return '\0';
+            }
+            return res;
+        }
+    };
+
+    const auto& bump = [&]() {
+        is.rdbuf()->sbumpc();
+    };
+
+    const auto& next = [&]() {
+        bump();
+        return peek();
+    };
+
+    bool negate = false;
+    auto ch = peek();
+    if (ch == '-') {
+        negate = true;
+        ch = next();
+    } else if (ch == '+') {
+        ch = next();
+    }
+
+    const char infinity[] = "infinity";
+    // Must be "inf" or "infinity"
+    int i = 0;
+    while (i < 8 && ch == infinity[i]) {
+        ++i;
+        ch = next();
+    }
+
+    if (i > 0) {
+        if (i == 3 || i == 8) {
+            x = negate ? fixed<B, I, F>::min() : fixed<B, I, F>::max();
+        } else {
+            is.setstate(std::ios::failbit);
+        }
+        return is;
+    }
+
+    char exponent_char = 'e';
+    int base = 10;
+
+    constexpr auto NoFraction = std::numeric_limits<int>::max();
+    int fraction_start = NoFraction;
+    std::vector<unsigned char> significand;
+
+    if (ch == '0') {
+        ch = next();
+        if (ch == 'x' || ch == 'X') {
+            // Hexfloat
+            exponent_char = 'p';
+            base = 16;
+            ch = next();
+        } else {
+            significand.push_back(0);
+        }
+    }
+
+    // Parse the significand
+    thousands_separator_allowed = true;
+    for (;; ch = next()) {
+        if (ch == '.') {
+            if (fraction_start != NoFraction) {
+                // Double decimal point. Stop parsing.
+                break;
+            }
+            fraction_start = significand.size();
+            thousands_separator_allowed = false;
+        } else {
+            unsigned char val = base;
+            if (ch >= '0' && ch <= '9') {
+                val = ch - '0';
+            } else if (ch >= 'a' && ch <= 'f') {
+                val = ch - 'a' + 10;
+            } else if (ch >= 'A' && ch <= 'F') {
+                val = ch - 'A' + 10;
+            }
+            if (val < 0 || val >= base) {
+                break;
+            }
+            significand.push_back(val);
+        }
+    }
+    if (significand.empty()) {
+        // We need a significand
+        is.setstate(std::ios::failbit);
+        return is;
+    }
+    thousands_separator_allowed = false;
+
+    if (fraction_start == NoFraction) {
+        // If we haven't seen a fraction yet, place it at the end of the significand
+        fraction_start = significand.size();
+    }
+
+    // Parse the exponent
+    bool exponent_overflow = false;
+    int exponent = 0;
+    if (std::tolower(ch) == exponent_char)
+    {
+        bool exponent_negate = false;
+
+        ch = next();
+        if (ch == '-') {
+            exponent_negate = true;
+            ch = next();
+        } else if (ch == '+') {
+            ch = next();
+        }
+
+        bool parsed = false;
+        while (std::isdigit(ch)) {
+            if (exponent <= std::numeric_limits<int>::max() / 10) {
+                exponent = exponent * 10 + (ch - '0');
+            } else {
+                exponent_overflow = true;
+            }
+            parsed = true;
+            ch = next();
+        }
+        if (!parsed) {
+            // If the exponent character is given, the exponent value may not be empty
+            is.setstate(std::ios::failbit);
+            return is;
+        }
+        if (exponent_negate) {
+            exponent = -exponent;
+        }
+    }
+
+    // We've parsed all we need. Construct the value.
+    if (exponent_overflow) {
+        // Absolute exponent is too large
+        if (std::all_of(significand.begin(), significand.end(), [](auto x){ return x == 0; })) {
+            // Significand is zero. Exponent doesn't matter.
+            x = fixed<B, I, F>(0);
+        } else if (exponent < 0) {
+            // A huge negative exponent approaches 0.
+            x = fixed<B, I, F>::from_raw_value(0);
+        } else {
+            // A huge positive exponent approaches infinity.
+            x = fixed<B, I, F>::max();
+        }
+        return is;
+    }
+
+    // Shift the fraction offset according to exponent
+    if (base == 10) {
+        const auto adjust = (exponent < 0)
+            ? -std::min<int>(-exponent, fraction_start)
+            : std::min<int>(exponent, significand.size() - fraction_start);
+        fraction_start += adjust;
+        exponent -= adjust;
+    } else {
+        const auto adjust = (exponent < 0)
+            ? std::min<int>(-exponent / 4, significand.size() - fraction_start)
+            : -std::min<int>(exponent / 4, fraction_start);
+        fraction_start += adjust;
+        exponent -= adjust;
+    }
+
+    constexpr auto IsSigned = std::is_signed<B>::value;
+    constexpr auto IntBits = sizeof(B) * 8 - F - (IsSigned ? 1 : 0);
+    constexpr auto MaxInt = (I{1} << IntBits) - 1;
+    constexpr auto MaxFraction = (I{1} << F) - 1;
+    constexpr auto MaxValue = (I{1} << sizeof(B) * 8) - 1;
+
+    // Parse the integer part
+    bool significand_overflow = false;
+    I integer = 0;
+    for (std::size_t i = 0; i < fraction_start; ++i) {
+        if (integer > MaxInt / base) {
+            // Overflow
+            x = negate ? fixed<B, I, F>::min() : fixed<B, I, F>::max();
+            return is;
+        }
+        assert(significand[i] < base);
+        integer = integer * base + significand[i];
+    }
+
+    // Parse the fractional part
+    I fraction = 0;
+    I divisor = 1;
+    for (std::size_t i = fraction_start; i < significand.size(); ++i) {
+        assert(significand[i] < base);
+        if (divisor > MaxFraction / base) {
+            // We're done
+            break;
+        }
+        fraction = fraction * base + significand[i];
+        divisor *= base;
+    }
+
+    // Construct the value from the parsed parts
+    I raw_value = (integer << F) + (fraction << F) / divisor;
+
+    // Apply remaining exponent
+    if (exponent_char == 'p') {
+        // Base-2 exponent
+        if (exponent < 0) {
+            raw_value >>= -exponent;
+        } else {
+            raw_value <<= exponent;
+        }
+    } else {
+        // Base-10 exponent
+        if (exponent < 0) {
+            I remainder = 0;
+            for (I e = 0; e < -exponent; ++e) {
+                remainder = raw_value % 10;
+                raw_value /= 10;
+            }
+            raw_value += remainder / 5;
+        } else {
+            for (I e = 0; e < exponent; ++e) {
+                if (raw_value > MaxValue / 10) {
+                    // Overflow
+                    x = negate ? fixed<B, I, F>::min() : fixed<B, I, F>::max();
+                    return is;
+                }
+                raw_value *= 10;
+            }
+        }
+    }
+    x = fixed<B, I, F>::from_raw_value(negate ? -raw_value : raw_value);
+    return is;
 }
 
 }

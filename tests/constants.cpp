@@ -21,3 +21,9 @@ TEST(constants, two_pi)
 {
     EXPECT_EQ(P(6.283185307179586476925286766559), P::two_pi());
 }
+
+TEST(constants, min_max)
+{
+    EXPECT_EQ(P::from_raw_value(0x7fffffff), P::max());
+    EXPECT_EQ(P::from_raw_value(-0x7fffffff - 1), P::min());
+}
