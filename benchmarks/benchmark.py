@@ -11,8 +11,10 @@ import sys
 def sanitize_type(type):
     if type == "Fix16":
         return "fix16"
+    if type == "CnlFixed16":
+        return "cnl::fixed_16_16"
     if type.startswith("fpm::fixed"):
-        return re.sub(r'^fpm::fixed_(.*)_(.*)$', r'Q\1.\2', type)
+        return type
     return type
 
 def parse_name(name):

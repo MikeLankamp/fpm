@@ -79,6 +79,24 @@ target_include_directories(libfixmath PUBLIC ${LIBFIXMATH_ROOT}/src/libfixmath-e
 add_dependencies(libfixmath libfixmath-external)
 
 #
+# CNL for alternative comparison
+#
+set(LIBCNL_ROOT "${CMAKE_CURRENT_BINARY_DIR}/libcnl")
+
+ExternalProject_Add(libcnl-external
+  GIT_REPOSITORY "https://github.com/johnmcfarlane/cnl"
+  GIT_TAG d6df27818fbc7f6de17af60e0cacae8443592c93
+  PREFIX ${LIBCNL_ROOT}
+  CONFIGURE_COMMAND ""
+  BUILD_COMMAND ""
+  INSTALL_COMMAND ""
+)
+
+add_library(libcnl INTERFACE)
+target_include_directories(libcnl INTERFACE ${LIBCNL_ROOT}/src/libcnl-external/include)
+add_dependencies(libcnl libcnl-external)
+
+#
 # Benchmark tool.
 # Runs benchmarks of FPM operations and dumps results to standard output.
 #
@@ -87,7 +105,7 @@ add_executable(fpm-benchmark
 	benchmarks/power.cpp
 	benchmarks/trigonometry.cpp
 )
-target_link_libraries(fpm-benchmark PRIVATE fpm libfixmath benchmark benchmark_main)
+target_link_libraries(fpm-benchmark PRIVATE fpm libfixmath libcnl benchmark benchmark_main)
 
 #
 # Accuracy tool.
