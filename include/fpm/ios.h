@@ -5,6 +5,7 @@
 #include "math.h"
 #include <array>
 #include <algorithm>
+#include <cctype>
 #include <climits>
 #include <limits>
 #include <ios>
@@ -555,8 +556,8 @@ std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>&
     char exponent_char = 'e';
     int base = 10;
 
-    constexpr auto NoFraction = std::numeric_limits<int>::max();
-    int fraction_start = NoFraction;
+    constexpr auto NoFraction = std::numeric_limits<std::size_t>::max();
+	std::size_t fraction_start = NoFraction;
     std::vector<unsigned char> significand;
 
     if (ch == '0') {
@@ -610,11 +611,10 @@ std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>&
 
     // Parse the exponent
     bool exponent_overflow = false;
-    int exponent = 0;
+    std::size_t exponent = 0;
+    bool exponent_negate = false;
     if (std::tolower(ch) == exponent_char)
     {
-        bool exponent_negate = false;
-
         ch = next();
         if (ch == '-') {
             exponent_negate = true;
@@ -638,9 +638,6 @@ std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>&
             is.setstate(std::ios::failbit);
             return is;
         }
-        if (exponent_negate) {
-            exponent = -exponent;
-        }
     }
 
     // We've parsed all we need. Construct the value.
@@ -649,7 +646,7 @@ std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>&
         if (std::all_of(significand.begin(), significand.end(), [](auto x){ return x == 0; })) {
             // Significand is zero. Exponent doesn't matter.
             x = fixed<B, I, F>(0);
-        } else if (exponent < 0) {
+        } else if (exponent_negate) {
             // A huge negative exponent approaches 0.
             x = fixed<B, I, F>::from_raw_value(0);
         } else {
@@ -660,19 +657,18 @@ std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>&
     }
 
     // Shift the fraction offset according to exponent
-    if (base == 10) {
-        const auto adjust = (exponent < 0)
-            ? -std::min<int>(-exponent, fraction_start)
-            : std::min<int>(exponent, significand.size() - fraction_start);
-        fraction_start += adjust;
-        exponent -= adjust;
-    } else {
-        const auto adjust = (exponent < 0)
-            ? std::min<int>(-exponent / 4, significand.size() - fraction_start)
-            : -std::min<int>(exponent / 4, fraction_start);
-        fraction_start += adjust;
-        exponent -= adjust;
-    }
+	{
+		const auto exponent_mult = (base == 10) ? 1: 4;
+		if (exponent_negate) {
+			const auto adjust = std::min(exponent / exponent_mult, fraction_start);
+			fraction_start -= adjust;
+			exponent -= adjust * exponent_mult;
+		} else {
+			const auto adjust = std::min(exponent / exponent_mult, significand.size() - fraction_start);
+			fraction_start += adjust;
+			exponent -= adjust * exponent_mult;
+		}
+	}
 
     constexpr auto IsSigned = std::is_signed<B>::value;
     constexpr auto IntBits = sizeof(B) * 8 - F - (IsSigned ? 1 : 0);
@@ -712,22 +708,22 @@ std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>&
     // Apply remaining exponent
     if (exponent_char == 'p') {
         // Base-2 exponent
-        if (exponent < 0) {
-            raw_value >>= -exponent;
+        if (exponent_negate) {
+            raw_value >>= exponent;
         } else {
             raw_value <<= exponent;
         }
     } else {
         // Base-10 exponent
-        if (exponent < 0) {
+        if (exponent_negate) {
             I remainder = 0;
-            for (I e = 0; e < -exponent; ++e) {
+            for (std::size_t e = 0; e < exponent; ++e) {
                 remainder = raw_value % 10;
                 raw_value /= 10;
             }
             raw_value += remainder / 5;
         } else {
-            for (I e = 0; e < exponent; ++e) {
+            for (std::size_t e = 0; e < exponent; ++e) {
                 if (raw_value > MaxValue / 10) {
                     // Overflow
                     x = negate ? std::numeric_limits<fixed<B, I, F>>::min() : std::numeric_limits<fixed<B, I, F>>::max();
@@ -737,7 +733,7 @@ std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>&
             }
         }
     }
-    x = fixed<B, I, F>::from_raw_value(negate ? -raw_value : raw_value);
+    x = fixed<B, I, F>::from_raw_value(static_cast<B>(negate ? -raw_value : raw_value));
     return is;
 }
 

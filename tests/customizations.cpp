@@ -24,7 +24,7 @@ TYPED_TEST(customizations, hash)
 {
     using P = TypeParam;
 
-    const std::hash<P> hash;
+	const std::hash<P> hash{};
     for (int y = -50; y < 50; ++y)
     {
         EXPECT_EQ(hash(P{y}/10), hash(P{y}/10));
@@ -51,7 +51,7 @@ struct Limits<fpm::fixed_16_16>
     static constexpr int max_exponent() noexcept { return  15; }
     static constexpr int min_exponent10() noexcept { return -4; }
     static constexpr int max_exponent10() noexcept { return 4; }
-    static constexpr auto min() noexcept { return fpm::fixed_16_16::from_raw_value(-2147483648); }
+    static constexpr auto min() noexcept { return fpm::fixed_16_16::from_raw_value(-2147483647 - 1); }
     static constexpr auto max() noexcept { return fpm::fixed_16_16::from_raw_value( 2147483647); }
 };
 
@@ -65,7 +65,7 @@ struct Limits<fpm::fixed_24_8>
     static constexpr int max_exponent() noexcept { return 23; }
     static constexpr int min_exponent10() noexcept { return -2; } 
     static constexpr int max_exponent10() noexcept { return 6; }
-    static constexpr auto min() noexcept { return fpm::fixed_24_8::from_raw_value(-2147483648); }
+    static constexpr auto min() noexcept { return fpm::fixed_24_8::from_raw_value(-2147483647 - 1); }
     static constexpr auto max() noexcept { return fpm::fixed_24_8::from_raw_value( 2147483647); }
 };
 
@@ -79,7 +79,7 @@ struct Limits<fpm::fixed_8_24>
     static constexpr int max_exponent() noexcept { return  7; }
     static constexpr int min_exponent10() noexcept { return -7; }
     static constexpr int max_exponent10() noexcept { return  2; }
-    static constexpr auto min() noexcept { return fpm::fixed_8_24::from_raw_value(-2147483648); }
+    static constexpr auto min() noexcept { return fpm::fixed_8_24::from_raw_value(-2147483647 - 1); }
     static constexpr auto max() noexcept { return fpm::fixed_8_24::from_raw_value( 2147483647); }
 };
 
