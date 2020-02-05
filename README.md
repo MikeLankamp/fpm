@@ -1,6 +1,8 @@
 # fpm
 A C++ header-only fixed-point math library. "fpm" stands for "fixed-point math".
 
+It is designed to serve as a drop-in replacement for floating-point types and aims to provide as much of the standard library's functionality as possible with exclusively integers. `fpm` requires C++11 or higher.
+
 [![Build Status](https://travis-ci.org/MikeLankamp/fpm.svg?branch=master)](https://travis-ci.org/MikeLankamp/fpm)
 [![Build status](https://ci.appveyor.com/api/projects/status/0velpwqk38spu412?svg=true)](https://ci.appveyor.com/project/MikeLankamp/fpm)
 

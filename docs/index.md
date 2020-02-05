@@ -1,6 +1,8 @@
 # fpm
 A C++ header-only fixed-point math library. "fpm" stands for "fixed-point math".
 
+It is designed to serve as a drop-in replacement for floating-point types and aims to provide as much of the standard library's functionality as possible with exclusively integers. `fpm` requires C++11 or higher.
+
 ## Usage
 `fpm` defines the `fpm::fixed` class, which is templated on the underlying integer type and the number of bits in the fraction:
 ```c++
@@ -46,7 +48,7 @@ Notes:
 * certain functions will always return the same value (e.g. `isnan` and `isinf` will always return false).
 * be mindful of a function's domain and range: the result of `pow` can quickly overflow with certain inputs. On the other hand, trigonometry functions such as `sin` require more bits in the fraction for accurate results.
 
-## Specialized customization pointers
+## Specialized customization points
 The header `<fpm/fixed.h>` provides specializations for `fpm::fixed` for the following types:
 * `std::hash`
 * `std::numeric_limits`
@@ -90,7 +92,7 @@ int main() {
 
 Reading fixed point numbers works similarly, by streaming `fpm::fixed` types from a `std::istream`.
 
-`fpm`'s implementation of the streaming operators emulates streaming native floats as closely as possible.
+`fpm`'s implementation of the streaming operators emulates streaming native floats as closely as possible without using floating-point types.
 
 ## Common constants
 The following static member functions in the `fpm::fixed` class provide common mathematical constants in the fixed type:
@@ -113,3 +115,4 @@ Notably the last point requires careful use of fixed-point numbers: like integer
 ## Alternatives
 * [libfixmath](https://github.com/PetteriAimonen/libfixmath): C99 library, only supports Q16.16 format backed by 32-bit integers.
 * [fixed_point](https://github.com/johnmcfarlane/fixed_point): C++11 header-only library, also supports generic precision.
+* [Compositional Numeric Library](https://github.com/johnmcfarlane/cnl): an experimental C++ header-only library worked on as part of WG-21/SG-14.
