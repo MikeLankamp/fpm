@@ -226,6 +226,16 @@ constexpr inline fixed<B, I, F> nexttoward(fixed<B, I, F> from, fixed<B, I, F> t
     return nextafter(from, to);
 }
 
+template <typename B, typename I, unsigned int F>
+inline fixed<B, I, F> modf(fixed<B, I, F> x, fixed<B, I, F>* iptr) noexcept
+{
+    const auto raw = x.raw_value();
+    constexpr auto FRAC = B{1} << F;
+    *iptr = fixed<B, I, F>::from_raw_value(raw / FRAC * FRAC);
+    return fixed<B, I, F>::from_raw_value(raw % FRAC);
+}
+
+
 //
 // Power functions
 //

@@ -47,3 +47,18 @@ TEST(manipulation, nexttoward)
     EXPECT_EQ(P::from_raw_value(0x0ffff), nexttoward(P(1), P(-10)));
     EXPECT_EQ(P::from_raw_value(-0x10001), nexttoward(P(-1), P(-10)));
 }
+
+TEST(manipulation, modf)
+{
+    using P = fpm::fixed_16_16;
+
+    P integral;
+    EXPECT_EQ(P(0), modf(P(0), &integral));
+    EXPECT_EQ(P(0), integral);
+
+    EXPECT_EQ(P(0.25), modf(P(12.25), &integral));
+    EXPECT_EQ(P(12), integral);
+
+    EXPECT_EQ(P(-0.25), modf(P(-12.25), &integral));
+    EXPECT_EQ(P(-12), integral);
+}
