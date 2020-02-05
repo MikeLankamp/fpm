@@ -175,14 +175,6 @@ constexpr inline fixed<B, I, F> abs(fixed<B, I, F> x) noexcept
     return (x >= fixed<B, I, F>{0}) ? x : -x;
 }
 
-template <typename B, typename I, unsigned int F, typename C, typename J, unsigned int G>
-constexpr inline fixed<B, I, F> copysign(fixed<B, I, F> x, fixed<C, J, G> y) noexcept
-{
-    return
-        x = abs(x),
-        (y >= fixed<C, J, G>{0}) ? x : -x;
-}
-
 template <typename B, typename I, unsigned int F>
 constexpr inline fixed<B, I, F> fmod(fixed<B, I, F> x, fixed<B, I, F> y) noexcept
 {
@@ -206,6 +198,32 @@ inline fixed<B, I, F> remquo(fixed<B, I, F> x, fixed<B, I, F> y, int* quo) noexc
     assert(quo != nullptr);
     *quo = x.raw_value() / y.raw_value();
     return fixed<B, I, F>::from_raw_value(x.raw_value() % y.raw_value());
+}
+
+//
+// Manipulation functions
+//
+
+template <typename B, typename I, unsigned int F, typename C, typename J, unsigned int G>
+constexpr inline fixed<B, I, F> copysign(fixed<B, I, F> x, fixed<C, J, G> y) noexcept
+{
+    return
+        x = abs(x),
+        (y >= fixed<C, J, G>{0}) ? x : -x;
+}
+
+template <typename B, typename I, unsigned int F>
+constexpr inline fixed<B, I, F> nextafter(fixed<B, I, F> from, fixed<B, I, F> to) noexcept
+{
+    return from == to ? to :
+           to > from ? fixed<B, I, F>::from_raw_value(from.raw_value() + 1)
+                     : fixed<B, I, F>::from_raw_value(from.raw_value() - 1);
+}
+
+template <typename B, typename I, unsigned int F>
+constexpr inline fixed<B, I, F> nexttoward(fixed<B, I, F> from, fixed<B, I, F> to) noexcept
+{
+    return nextafter(from, to);
 }
 
 //
