@@ -545,7 +545,7 @@ std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>&
 
     if (i > 0) {
         if (i == 3 || i == 8) {
-            x = negate ? fixed<B, I, F>::min() : fixed<B, I, F>::max();
+            x = negate ? std::numeric_limits<fixed<B, I, F>>::min() : std::numeric_limits<fixed<B, I, F>>::max();
         } else {
             is.setstate(std::ios::failbit);
         }
@@ -654,7 +654,7 @@ std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>&
             x = fixed<B, I, F>::from_raw_value(0);
         } else {
             // A huge positive exponent approaches infinity.
-            x = fixed<B, I, F>::max();
+            x = std::numeric_limits<fixed<B, I, F>>::max();
         }
         return is;
     }
@@ -686,7 +686,7 @@ std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>&
     for (std::size_t i = 0; i < fraction_start; ++i) {
         if (integer > MaxInt / base) {
             // Overflow
-            x = negate ? fixed<B, I, F>::min() : fixed<B, I, F>::max();
+            x = negate ? std::numeric_limits<fixed<B, I, F>>::min() : std::numeric_limits<fixed<B, I, F>>::max();
             return is;
         }
         assert(significand[i] < base);
@@ -730,7 +730,7 @@ std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>&
             for (I e = 0; e < exponent; ++e) {
                 if (raw_value > MaxValue / 10) {
                     // Overflow
-                    x = negate ? fixed<B, I, F>::min() : fixed<B, I, F>::max();
+                    x = negate ? std::numeric_limits<fixed<B, I, F>>::min() : std::numeric_limits<fixed<B, I, F>>::max();
                     return is;
                 }
                 raw_value *= 10;

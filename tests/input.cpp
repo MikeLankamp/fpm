@@ -278,25 +278,25 @@ TEST_F(input, overflow)
 {
     using P = fpm::fixed_16_16;
 
-    test_conversion("1e100", P::max());
-    test_conversion("-1e100", P::min());
+    test_conversion("1e100", std::numeric_limits<P>::max());
+    test_conversion("-1e100", std::numeric_limits<P>::min());
 
-    test_conversion("100000", P::max());
-    test_conversion("-100000", P::min());
+    test_conversion("100000", std::numeric_limits<P>::max());
+    test_conversion("-100000", std::numeric_limits<P>::min());
 
-    test_conversion("1000000000000000000000000000000000000000000000", P::max());
-    test_conversion("-1000000000000000000000000000000000000000000000", P::min());
+    test_conversion("1000000000000000000000000000000000000000000000", std::numeric_limits<P>::max());
+    test_conversion("-1000000000000000000000000000000000000000000000", std::numeric_limits<P>::min());
 }
 
 TEST_F(input, infinity)
 {
     using P = fpm::fixed_16_16;
 
-    test_conversion("inf", P::max());
-    test_conversion("infinity", P::max());
+    test_conversion("inf", std::numeric_limits<P>::max());
+    test_conversion("infinity", std::numeric_limits<P>::max());
 
-    test_conversion("-inf", P::min());
-    test_conversion("-infinity", P::min());
+    test_conversion("-inf", std::numeric_limits<P>::min());
+    test_conversion("-infinity", std::numeric_limits<P>::min());
 
     test_invalid_conversion("infinit", "");
     test_invalid_conversion("infini", "");
@@ -305,7 +305,7 @@ TEST_F(input, infinity)
     test_invalid_conversion("in", "");
     test_invalid_conversion("i", "");
 
-    test_conversion("infa", P::max(), "a");
+    test_conversion("infa", std::numeric_limits<P>::max(), "a");
     test_invalid_conversion("infinix", "x");
     test_invalid_conversion("ib", "b");
     test_invalid_conversion("-ic", "c");

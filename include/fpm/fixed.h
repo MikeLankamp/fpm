@@ -4,6 +4,7 @@
 #include <cassert>
 #include <cmath>
 #include <cstdint>
+#include <functional>
 #include <limits>
 #include <type_traits>
 
@@ -103,9 +104,6 @@ public:
     static constexpr fixed pi() { return from_fixed_point<61>(7244019458077122842ll); }
     static constexpr fixed half_pi() { return from_fixed_point<62>(7244019458077122842ll); }
     static constexpr fixed two_pi() { return from_fixed_point<60>(7244019458077122842ll); }
-
-    static constexpr fixed max() { return from_raw_value(std::numeric_limits<BaseType>::max()); };
-    static constexpr fixed min() { return from_raw_value(std::numeric_limits<BaseType>::min()); };
 
     //
     // Arithmetic member operators
@@ -316,6 +314,153 @@ constexpr inline bool operator>=(const fixed<B, I, F>& x, const fixed<B, I, F>& 
 {
     return x.raw_value() >= y.raw_value();
 }
+
+namespace detail
+{
+// Number of base-10 digits required to fully represent a number of bits
+static constexpr int max_digits10(int bits)
+{
+    // 8.24 fixed-point equivalent of (int)ceil(bits * std::log10(2));
+    using T = long long;
+    return static_cast<int>((T{bits} * 5050445 + (T{1} << 24) - 1) >> 24);
+}
+
+// Number of base-10 digits that can be fully represented by a number of bits
+static constexpr int digits10(int bits)
+{
+    // 8.24 fixed-point equivalent of (int)(bits * std::log10(2));
+    using T = long long;
+    return static_cast<int>((T{bits} * 5050445) >> 24);
+}
+
+} // namespace detail
+} // namespace fpm
+
+// Specializations for customization points
+namespace std
+{
+
+template <typename B, typename I, unsigned int F>
+struct hash<fpm::fixed<B,I,F>>
+{
+    using argument_type = fpm::fixed<B, I, F>;
+    using result_type = std::size_t;
+
+    result_type operator()(argument_type arg) const noexcept(noexcept(std::declval<std::hash<B>>()(arg.raw_value()))) {
+        return m_hash(arg.raw_value());
+    }
+
+private:
+    std::hash<B> m_hash;
+};
+
+template <typename B, typename I, unsigned int F>
+struct numeric_limits<fpm::fixed<B,I,F>>
+{
+    static constexpr bool is_specialized = true;
+    static constexpr bool is_signed = std::numeric_limits<B>::is_signed;
+    static constexpr bool is_integer = false;
+    static constexpr bool is_exact = true;
+    static constexpr bool has_infinity = false;
+    static constexpr bool has_quiet_NaN = false;
+    static constexpr bool has_signaling_NaN = false;
+    static constexpr bool has_denorm = std::denorm_absent;
+    static constexpr bool has_denorm_loss = false;
+    static constexpr std::float_round_style round_style = std::round_to_nearest;
+    static constexpr bool is_iec_559 = false;
+    static constexpr bool is_bounded = true;
+    static constexpr bool is_modulo = std::numeric_limits<B>::is_modulo;
+    static constexpr int digits = std::numeric_limits<B>::digits;
+
+    // Any number with `digits10` significant base-10 digits (that fits in
+    // the range of the type) is guaranteed to be convertible from text and
+    // back without change. Worst case, this is 0.000...001, so we can only
+    // guarantee this case. Nothing more.
+    static constexpr int digits10 = 1;
+
+    // This is equal to max_digits10 for the integer and fractional part together.
+    static const int max_digits10 =
+        fpm::detail::max_digits10(std::numeric_limits<B>::digits - F) + fpm::detail::max_digits10(F);
+
+    static constexpr int radix = 2;
+    static constexpr int min_exponent = 1 - F;
+    static constexpr int min_exponent10 = -fpm::detail::digits10(F);
+    static constexpr int max_exponent = std::numeric_limits<B>::digits - F;
+    static constexpr int max_exponent10 = fpm::detail::digits10(std::numeric_limits<B>::digits - F);
+    static constexpr bool traps = true;
+    static constexpr bool tinyness_before = false;
+
+    static constexpr fpm::fixed<B,I,F> lowest() noexcept {
+        return fpm::fixed<B,I,F>::from_raw_value(std::numeric_limits<B>::lowest());
+    };
+
+    static constexpr fpm::fixed<B,I,F> min() noexcept {
+        return lowest();
+    }
+
+    static constexpr fpm::fixed<B,I,F> max() noexcept {
+        return fpm::fixed<B,I,F>::from_raw_value(std::numeric_limits<B>::max());
+    };
+
+    static constexpr fpm::fixed<B,I,F> epsilon() noexcept {
+        return fpm::fixed<B,I,F>::from_raw_value(1);
+    };
+
+    static constexpr fpm::fixed<B,I,F> round_error() noexcept {
+        return fpm::fixed<B,I,F>(1) / 2;
+    };
+
+    static constexpr fpm::fixed<B,I,F> denorm_min() noexcept {
+        return min();
+    }
+};
+
+template <typename B, typename I, unsigned int F>
+constexpr bool numeric_limits<fpm::fixed<B,I,F>>::is_specialized;
+template <typename B, typename I, unsigned int F>
+constexpr bool numeric_limits<fpm::fixed<B,I,F>>::is_signed;
+template <typename B, typename I, unsigned int F>
+constexpr bool numeric_limits<fpm::fixed<B,I,F>>::is_integer;
+template <typename B, typename I, unsigned int F>
+constexpr bool numeric_limits<fpm::fixed<B,I,F>>::is_exact;
+template <typename B, typename I, unsigned int F>
+constexpr bool numeric_limits<fpm::fixed<B,I,F>>::has_infinity;
+template <typename B, typename I, unsigned int F>
+constexpr bool numeric_limits<fpm::fixed<B,I,F>>::has_quiet_NaN;
+template <typename B, typename I, unsigned int F>
+constexpr bool numeric_limits<fpm::fixed<B,I,F>>::has_signaling_NaN;
+template <typename B, typename I, unsigned int F>
+constexpr bool numeric_limits<fpm::fixed<B,I,F>>::has_denorm;
+template <typename B, typename I, unsigned int F>
+constexpr bool numeric_limits<fpm::fixed<B,I,F>>::has_denorm_loss;
+template <typename B, typename I, unsigned int F>
+constexpr std::float_round_style numeric_limits<fpm::fixed<B,I,F>>::round_style;
+template <typename B, typename I, unsigned int F>
+constexpr bool numeric_limits<fpm::fixed<B,I,F>>::is_iec_559;
+template <typename B, typename I, unsigned int F>
+constexpr bool numeric_limits<fpm::fixed<B,I,F>>::is_bounded;
+template <typename B, typename I, unsigned int F>
+constexpr bool numeric_limits<fpm::fixed<B,I,F>>::is_modulo;
+template <typename B, typename I, unsigned int F>
+constexpr int numeric_limits<fpm::fixed<B,I,F>>::digits;
+template <typename B, typename I, unsigned int F>
+constexpr int numeric_limits<fpm::fixed<B,I,F>>::digits10;
+template <typename B, typename I, unsigned int F>
+constexpr int numeric_limits<fpm::fixed<B,I,F>>::max_digits10;
+template <typename B, typename I, unsigned int F>
+constexpr int numeric_limits<fpm::fixed<B,I,F>>::radix;
+template <typename B, typename I, unsigned int F>
+constexpr int numeric_limits<fpm::fixed<B,I,F>>::min_exponent;
+template <typename B, typename I, unsigned int F>
+constexpr int numeric_limits<fpm::fixed<B,I,F>>::min_exponent10;
+template <typename B, typename I, unsigned int F>
+constexpr int numeric_limits<fpm::fixed<B,I,F>>::max_exponent;
+template <typename B, typename I, unsigned int F>
+constexpr int numeric_limits<fpm::fixed<B,I,F>>::max_exponent10;
+template <typename B, typename I, unsigned int F>
+constexpr bool numeric_limits<fpm::fixed<B,I,F>>::traps;
+template <typename B, typename I, unsigned int F>
+constexpr bool numeric_limits<fpm::fixed<B,I,F>>::tinyness_before;
 
 }
 

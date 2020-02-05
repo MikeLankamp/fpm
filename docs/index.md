@@ -46,6 +46,11 @@ Notes:
 * certain functions will always return the same value (e.g. `isnan` and `isinf` will always return false).
 * be mindful of a function's domain and range: the result of `pow` can quickly overflow with certain inputs. On the other hand, trigonometry functions such as `sin` require more bits in the fraction for accurate results.
 
+## Specialized customization pointers
+The header `<fpm/fixed.h>` provides specializations for `fpm::fixed` for the following types:
+* `std::hash`
+* `std::numeric_limits`
+
 ## Conversion to and from float
 The intent behind `fpm` is to replace floats for purposes of performance or portability. Thus, it guards against accidental usage of floats by requiring explicit conversion:
 ```c++
