@@ -6,6 +6,8 @@ It is designed to serve as a drop-in replacement for floating-point types and ai
 [![Build Status](https://travis-ci.org/MikeLankamp/fpm.svg?branch=master)](https://travis-ci.org/MikeLankamp/fpm)
 [![Build status](https://ci.appveyor.com/api/projects/status/0velpwqk38spu412?svg=true)](https://ci.appveyor.com/project/MikeLankamp/fpm)
 
+`fpm` is designed to guard against accidental conversion to and from floats and supports many of the standard C++ maths functions, including trigonometry, power and logarithmic functions, with performance and accuracy generally comparable to alternative libraries.
+
 ## Why use fixed-point math?
 There are several reasons why you can not or choose not to use floating-point math, but still want a similar type:
 * Your target platform lacks an FPU, does not support floating-point operations or its floating-point operations are
@@ -37,8 +39,12 @@ To use the fixed-point equivalents of the `<math.h>` functions such as `sqrt`, `
 To stream fixed-point values to or from streams, include the header `<fpm/ios.h>`.
 
 ## Documentation
-Please refer to the [documentation](docs/index.md) for detailed information how to use `fpm`, its performance and its accuracy
+Please refer to the [documentation](docs/index.md) for detailed information how to use `fpm`, or skip straight to the [performance](docs/performance.md) or [accuracy](docs/accuracy.md) results.
 compared to native floating pointer numbers.
+
+## Contributions
+
+This library is a work-in-progress. We welcome any contributions that improve the functional coverage or the performance or accuracy of the mathematical functions.
 
 ## License
 See the [LICENSE](LICENSE) file
