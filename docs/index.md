@@ -107,12 +107,12 @@ Please refer to the pages for [accuracy](accuracy.md) and [performance](performa
 ## Limitations
 Unlike floating-point numbers, `fpm::fixed`:
 * can not represent Not-a-Number, infinity or negative zero.
-* does not have a notion of epsilon or subnormal numbers.
+* does not have a notion of subnormal numbers.
 * does have a risk of overflow and underflow.
 
 Notably the last point requires careful use of fixed-point numbers: like integers, you must ensure that they do not overflow or underflow.
 
 ## Alternatives
 * [libfixmath](https://github.com/PetteriAimonen/libfixmath): C99 library, only supports Q16.16 format backed by 32-bit integers.
-* [fixed_point](https://github.com/johnmcfarlane/fixed_point): C++11 header-only library, also supports generic precision.
-* [Compositional Numeric Library](https://github.com/johnmcfarlane/cnl): an experimental C++ header-only library worked on as part of WG-21/SG-14.
+* [Compositional Numeric Library](https://github.com/johnmcfarlane/cnl): an experimental C++ header-only library worked on as part of WG-21/SG-14. Lacks many mathematical functions.
+* [fp](https://github.com/mizvekov/fp): a C++14 header-only library. Does not provide any mathematical functions.

@@ -43,7 +43,6 @@ Please refer to the [documentation](docs/index.md) for detailed information how 
 compared to native floating pointer numbers.
 
 ## Contributions
-
 This library is a work-in-progress. We welcome any contributions that improve the functional coverage or the performance or accuracy of the mathematical functions.
 
 ## License
