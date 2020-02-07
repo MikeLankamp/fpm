@@ -1,6 +1,6 @@
 #include <benchmark/benchmark.h>
-#include <fpm/fixed.h>
-#include <fpm/math.h>
+#include <fpm/fixed.hpp>
+#include <fpm/math.hpp>
 #include <cnl/fixed_point.h>
 #include <fixmath.h>
 

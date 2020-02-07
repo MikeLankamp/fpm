@@ -1,5 +1,5 @@
-#include "common.h"
-#include <fpm/ios.h>
+#include "common.hpp"
+#include <fpm/ios.hpp>
 #include <sstream>
 
 using ::testing::Combine;

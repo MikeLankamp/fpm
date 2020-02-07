@@ -1,5 +1,5 @@
 #include <benchmark/benchmark.h>
-#include <fpm/fixed.h>
+#include <fpm/fixed.hpp>
 #include <cnl/fixed_point.h>
 
 #include <fixmath.h>

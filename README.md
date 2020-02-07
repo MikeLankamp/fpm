@@ -18,13 +18,13 @@ If any of these reasons apply for you, and your problem domain has a clearly out
 then fixed-point numbers might be a solution for you.
 
 ## Quick Start
-To use `fpm`, simply include its header `<fpm/fixed.h>` and use the `fpm::fixed_16_16`, `fpm::fixed_24_8` or `fpm::fixed_8_24`
+To use `fpm`, include its header `<fpm/fixed.hpp>` and use the `fpm::fixed_16_16`, `fpm::fixed_24_8` or `fpm::fixed_8_24`
 types as if they were native floating-pointer types:
 ```c++
-#include <fpm/fixed.h>  // For fpm::fixed_16_16
-#include <fpm/math.h>   // For fpm::cos
-#include <fpm/ios.h>    // For fpm::operator<<
-#include <iostream>     // For std::cin, std::cout
+#include <fpm/fixed.hpp>  // For fpm::fixed_16_16
+#include <fpm/math.hpp>   // For fpm::cos
+#include <fpm/ios.hpp>    // For fpm::operator<<
+#include <iostream>       // For std::cin, std::cout
 
 int main() {
     std::cout << "Please input a number: ";
@@ -35,8 +35,8 @@ int main() {
 }
 ```
 
-To use the fixed-point equivalents of the `<math.h>` functions such as `sqrt`, `sin` and `log`, include the header `<fpm/math.h>`.
-To stream fixed-point values to or from streams, include the header `<fpm/ios.h>`.
+To use the fixed-point equivalents of the `<math.h>` functions such as `sqrt`, `sin` and `log`, include the header `<fpm/math.hpp>`.
+To stream fixed-point values to or from streams, include the header `<fpm/ios.hpp>`.
 
 ## Documentation
 Please refer to the [documentation](docs/index.md) for detailed information how to use `fpm`, or skip straight to the [performance](docs/performance.md) or [accuracy](docs/accuracy.md) results.

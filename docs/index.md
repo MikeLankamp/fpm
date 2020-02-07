@@ -17,7 +17,7 @@ for signed integer types.
 
 To use this class, simply include its header:
 ```c++
-#include <fpm/fixed.h>
+#include <fpm/fixed.hpp>
 ```
 You may wish to typedef a particular choice of underlying type, intermediate type and fraction bitcount, e.g.:
 ```c++
@@ -35,7 +35,7 @@ namespace fpm {
 ```
 
 ## Mathematical functions
-FPM offers the header `<fpm/math.h>` with mathematical functions that operate on its fixed-point types, similar to `<math.h>` for floating-point types.
+FPM offers the header `<fpm/math.hpp>` with mathematical functions that operate on its fixed-point types, similar to `<math.hpp>` for floating-point types.
 The available functions for fixed-point types include:
 * basic functions: `abs`, `fmod`, `remainder`, `copysign`, `remquo`, etc.
 * trigonometry functions: `sin`, `cos`, `tan`, `asin`, `acos`, `atan` and `atan2`.
@@ -49,7 +49,7 @@ Notes:
 * be mindful of a function's domain and range: the result of `pow` can quickly overflow with certain inputs. On the other hand, trigonometry functions such as `sin` require more bits in the fraction for accurate results.
 
 ## Specialized customization points
-The header `<fpm/fixed.h>` provides specializations for `fpm::fixed` for the following types:
+The header `<fpm/fixed.hpp>` provides specializations for `fpm::fixed` for the following types:
 * `std::hash`
 * `std::numeric_limits`
 
@@ -74,12 +74,12 @@ int e = static_cast<int>(b);   // OK: explicit conversion to int
 You must still guard against underflow and overflow, though.
 
 ## Printing and reading fixed-point numbers
-The `<fpm/ios.h>` header provides streaming operators. Simply stream an expression of type `fpm::fixed` to or from a `std::ostream`.
+The `<fpm/ios.hpp>` header provides streaming operators. Simply stream an expression of type `fpm::fixed` to or from a `std::ostream`.
 
 For instance, the following program prints `"===3.142e+02"`:
 ```c++
-#include <fpm/fixed.h>
-#include <fpm/ios.h>
+#include <fpm/fixed.hpp>
+#include <fpm/ios.hpp>
 #include <iostream>
 #include <iomanip>
 

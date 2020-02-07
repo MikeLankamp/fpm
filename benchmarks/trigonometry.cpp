@@ -1,6 +1,6 @@
 #include <benchmark/benchmark.h>
-#include <fpm/fixed.h>
-#include <fpm/math.h>
+#include <fpm/fixed.hpp>
+#include <fpm/math.hpp>
 #include <fixmath.h>
 
 #define BENCHMARK_TEMPLATE1_CAPTURE(func, test_case_name, a, ...)   \
@@ -17,7 +17,7 @@ static Fix16 fix16_func(Fix16 f)
 }
 
 // Constant for our trigonometry function argument.
-// Stored as volatile to force the compiler to read them and 
+// Stored as volatile to force the compiler to read them and
 // not optimize the entire expression into a constant.
 static volatile int16_t s_x = 174;
 

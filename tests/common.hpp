@@ -1,4 +1,4 @@
-#include <fpm/fixed.h>
+#include <fpm/fixed.hpp>
 #include <gtest/gtest.h>
 #include <iomanip>
 #include <ostream>

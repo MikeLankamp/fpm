@@ -1,4 +1,4 @@
-#include "common.h"
+#include "common.hpp"
 
 template <typename T>
 class customizations : public ::testing::Test
@@ -63,7 +63,7 @@ struct Limits<fpm::fixed_24_8>
     static constexpr int max_digits10() noexcept { return 7+3; }
     static constexpr int min_exponent() noexcept { return -7; }
     static constexpr int max_exponent() noexcept { return 23; }
-    static constexpr int min_exponent10() noexcept { return -2; } 
+    static constexpr int min_exponent10() noexcept { return -2; }
     static constexpr int max_exponent10() noexcept { return 6; }
     static constexpr auto min() noexcept { return fpm::fixed_24_8::from_raw_value(-2147483647 - 1); }
     static constexpr auto max() noexcept { return fpm::fixed_24_8::from_raw_value( 2147483647); }

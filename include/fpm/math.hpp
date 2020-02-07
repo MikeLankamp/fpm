@@ -1,7 +1,7 @@
 #ifndef FPM_MATH_H
 #define FPM_MATH_H
 
-#include "fixed.h"
+#include "fixed.hpp"
 #include <cmath>
 
 #ifdef _MSC_VER

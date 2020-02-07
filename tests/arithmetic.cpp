@@ -1,4 +1,4 @@
-#include "common.h"
+#include "common.hpp"
 
 TEST(arithmethic, negation)
 {
@@ -47,7 +47,7 @@ TEST(arithmethic, division_range)
 {
     using P = fpm::fixed<std::int32_t, std::int64_t, 12>;
 
-    // These calculation will overflow and produce 
+    // These calculation will overflow and produce
     // wrong results without the intermediate type.
     EXPECT_EQ(P(32), P(256) / P(8));
 }

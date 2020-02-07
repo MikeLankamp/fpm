@@ -1,8 +1,8 @@
 #ifndef FPM_IOS_H
 #define FPM_IOS_H
 
-#include "fixed.h"
-#include "math.h"
+#include "fixed.hpp"
+#include "math.hpp"
 #include <array>
 #include <algorithm>
 #include <cctype>
