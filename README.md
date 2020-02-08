@@ -40,7 +40,6 @@ To stream fixed-point values to or from streams, include the header `<fpm/ios.hp
 
 ## Documentation
 Please refer to the [documentation](docs/index.md) for detailed information how to use `fpm`, or skip straight to the [performance](docs/performance.md) or [accuracy](docs/accuracy.md) results.
-compared to native floating pointer numbers.
 
 ## Contributions
 This library is a work-in-progress. We welcome any contributions that improve the functional coverage or the performance or accuracy of the mathematical functions.
