@@ -41,7 +41,7 @@ class output : public ::testing::TestWithParam<Flags>
 protected:
     bool is_test_valid(const std::ios_base& stream, double value) const
     {
-		const auto floatfield = stream.flags() & std::ios::floatfield;
+        const auto floatfield = stream.flags() & std::ios::floatfield;
 
 #if defined(__GLIBCXX__ )
         // stdlibc++ seems to have a bug where it applies thousands grouping in hexadecimal mode,
@@ -49,40 +49,40 @@ protected:
         // interesting results such as "0,x1.8p+3" instead of "0x1.8p+3" with a grouping
         // of "\002", or "0,x,1.8p+3" with a grouping of "\001".
         const auto& numpunct = std::use_facet<std::numpunct<char>>(stream.getloc());
-		if (floatfield == (std::ios::fixed | std::ios::scientific) && !numpunct.grouping().empty())
-		{
-			return false;
-		}
+        if (floatfield == (std::ios::fixed | std::ios::scientific) && !numpunct.grouping().empty())
+        {
+            return false;
+        }
 #elif defined(_MSC_VER)
-		// Microsoft Visual C++ has a few problems:
-		// It doesn't properly ignore the specified precision for hexfloat
-		if (floatfield == (std::ios::fixed | std::ios::scientific))
-		{
-			return false;
-		}
-		// A precision of zero isn't properly handled with a floatfield of "auto" or scientific
-		if (stream.precision() == 0 && (floatfield == 0 || floatfield == std::ios::scientific))
-		{
-			return false;
-		}
-		// Specifying "showpoint" adds a spurious "0" when the value is 0.
-		if (value == 0 && (stream.flags() & std::ios::showpoint) != 0)
-		{
-			return false;
-		}
+        // Microsoft Visual C++ has a few problems:
+        // It doesn't properly ignore the specified precision for hexfloat
+        if (floatfield == (std::ios::fixed | std::ios::scientific))
+        {
+            return false;
+        }
+        // A precision of zero isn't properly handled with a floatfield of "auto" or scientific
+        if (stream.precision() == 0 && (floatfield == 0 || floatfield == std::ios::scientific))
+        {
+            return false;
+        }
+        // Specifying "showpoint" adds a spurious "0" when the value is 0.
+        if (value == 0 && (stream.flags() & std::ios::showpoint) != 0)
+        {
+            return false;
+        }
 #endif
 
-		return true;
+        return true;
     }
 
     void test(double value) const
     {
         using P = fpm::fixed_16_16;
 
-		std::stringstream ss_fixed = create_stream();
-		std::stringstream ss_float = create_stream();
+        std::stringstream ss_fixed = create_stream();
+        std::stringstream ss_float = create_stream();
 
-		if (!is_test_valid(ss_float, value))
+        if (!is_test_valid(ss_float, value))
         {
             GTEST_SKIP() << "Skipping test due to invalid test combination";
             return;
@@ -128,9 +128,9 @@ TEST_P(output, small_numbers)
     test(0.0);
 
 #if !defined(_MSC_VER)
-	// Microsoft Visual C++ isn't rounding these correctly. See
-	// the rounding tests for more information.
-	test(1.125);
+    // Microsoft Visual C++ isn't rounding these correctly. See
+    // the rounding tests for more information.
+    test(1.125);
     test(-1.125);
 
     test(0.125);
@@ -193,16 +193,16 @@ protected:
         using P = fpm::fixed_24_8;
         using std::get;
 
-		auto flags = get<0>(GetParam());
-		auto grouping = get<1>(GetParam());
+        auto flags = get<0>(GetParam());
+        auto grouping = get<1>(GetParam());
 
 #if defined(_MSC_VER)
-		// Microsoft Visual C++ does not respect a grouping size < 0 (e.g. "\x200").
-		// It it supposed to represent "infinite group" but instead it reuses the last group size
-		if (grouping.find('\200') != std::string::npos) {
-			GTEST_SKIP();
-			return;
-		}
+        // Microsoft Visual C++ does not respect a grouping size < 0 (e.g. "\x200").
+        // It it supposed to represent "infinite group" but instead it reuses the last group size
+        if (grouping.find('\200') != std::string::npos) {
+            GTEST_SKIP();
+            return;
+        }
 #endif
 
         std::locale locale(std::locale("C"), new fake_numpunct('.', ',', grouping));
@@ -246,10 +246,10 @@ protected:
         using P = fpm::fixed_16_16;
 
 #if defined(_MSC_VER)
-		// Microsoft Visual C++ has a bug where the floating point rounding mode (fesetround) of FE_TONEAREST
-		// is not respected in printing functions, instead rounding "away from zero".
-		GTEST_SKIP();
-		return;
+        // Microsoft Visual C++ has a bug where the floating point rounding mode (fesetround) of FE_TONEAREST
+        // is not respected in printing functions, instead rounding "away from zero".
+        GTEST_SKIP();
+        return;
 #endif
 
         std::stringstream ss_fixed, ss_float;

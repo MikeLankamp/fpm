@@ -427,7 +427,7 @@ std::basic_ostream<CharT>& operator<<(std::basic_ostream<CharT>& os, fixed<B, I,
 
     // Pad the buffer if necessary.
     // Note that the length of trailing zeros is counted towards the length of the content.
-	const auto content_size = end - buffer.begin() + trailing_zeros_count;
+    const auto content_size = end - buffer.begin() + trailing_zeros_count;
     if (content_size >= width)
     {
         // Buffer needs no padding, output as-is
@@ -435,7 +435,7 @@ std::basic_ostream<CharT>& operator<<(std::basic_ostream<CharT>& os, fixed<B, I,
     }
     else
     {
-		const auto pad_size = width - content_size;
+        const auto pad_size = width - content_size;
         switch (adjustfield)
         {
         case std::ios_base::left:
@@ -557,7 +557,7 @@ std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>&
     int base = 10;
 
     constexpr auto NoFraction = std::numeric_limits<std::size_t>::max();
-	std::size_t fraction_start = NoFraction;
+    std::size_t fraction_start = NoFraction;
     std::vector<unsigned char> significand;
 
     if (ch == '0') {
@@ -657,18 +657,18 @@ std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>&
     }
 
     // Shift the fraction offset according to exponent
-	{
-		const auto exponent_mult = (base == 10) ? 1: 4;
-		if (exponent_negate) {
-			const auto adjust = std::min(exponent / exponent_mult, fraction_start);
-			fraction_start -= adjust;
-			exponent -= adjust * exponent_mult;
-		} else {
-			const auto adjust = std::min(exponent / exponent_mult, significand.size() - fraction_start);
-			fraction_start += adjust;
-			exponent -= adjust * exponent_mult;
-		}
-	}
+    {
+        const auto exponent_mult = (base == 10) ? 1: 4;
+        if (exponent_negate) {
+            const auto adjust = std::min(exponent / exponent_mult, fraction_start);
+            fraction_start -= adjust;
+            exponent -= adjust * exponent_mult;
+        } else {
+            const auto adjust = std::min(exponent / exponent_mult, significand.size() - fraction_start);
+            fraction_start += adjust;
+            exponent -= adjust * exponent_mult;
+        }
+    }
 
     constexpr auto IsSigned = std::is_signed<B>::value;
     constexpr auto IntBits = sizeof(B) * 8 - F - (IsSigned ? 1 : 0);

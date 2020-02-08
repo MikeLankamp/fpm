@@ -9,12 +9,12 @@
       (::benchmark::internal::RegisterBenchmarkInternal(            \
           new ::benchmark::internal::FunctionBenchmark(             \
               #func "<" #a ">/" #test_case_name,					\
-		   	  [](::benchmark::State& st) { func<a>(st, __VA_ARGS__); })))
+              [](::benchmark::State& st) { func<a>(st, __VA_ARGS__); })))
 
 template <fix16_t (*func)(fix16_t)>
 static Fix16 fix16_func(Fix16 f)
 {
-	return (*func)(f);
+    return (*func)(f);
 }
 
 // Constants for our power function arguments.
@@ -26,32 +26,32 @@ static volatile int16_t s_y =  174;
 template <typename TValue>
 static void power1(benchmark::State& state, TValue (*func)(TValue))
 {
-	for (auto _ : state)
-	{
-		TValue x{ static_cast<TValue>(s_x / 256.0) };
-		benchmark::DoNotOptimize(func(x));
-	}
+    for (auto _ : state)
+    {
+        TValue x{ static_cast<TValue>(s_x / 256.0) };
+        benchmark::DoNotOptimize(func(x));
+    }
 }
 
 template <typename TValue>
 static void power1(benchmark::State& state, TValue (*func)(const TValue&))
 {
-	for (auto _ : state)
-	{
-		TValue x{ static_cast<TValue>(s_x / 256.0) };
-		benchmark::DoNotOptimize(func(x));
-	}
+    for (auto _ : state)
+    {
+        TValue x{ static_cast<TValue>(s_x / 256.0) };
+        benchmark::DoNotOptimize(func(x));
+    }
 }
 
 template <typename TValue>
 static void power2(benchmark::State& state, TValue (*func)(TValue, TValue))
 {
-	for (auto _ : state)
-	{
-		TValue x{ static_cast<TValue>(s_x / 256.0) };
-		TValue y{ static_cast<TValue>(s_y / 256.0) };
-		benchmark::DoNotOptimize(func(x, y));
-	}
+    for (auto _ : state)
+    {
+        TValue x{ static_cast<TValue>(s_x / 256.0) };
+        TValue y{ static_cast<TValue>(s_y / 256.0) };
+        benchmark::DoNotOptimize(func(x, y));
+    }
 }
 
 using CnlFixed16 = cnl::fixed_point<std::int32_t, -16>;

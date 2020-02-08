@@ -20,15 +20,15 @@ static volatile int16_t s_y = 2552;
 template <typename TValue>
 static void arithmetic(benchmark::State& state, TValue (*func)(TValue, TValue))
 {
-	for (auto _ : state)
-	{
-		TValue x{ static_cast<TValue>(static_cast<int16_t>(s_x)) }, y{ static_cast<TValue>(static_cast<int16_t>(s_y)) };
-		benchmark::DoNotOptimize(func(x, y));
-	}
+    for (auto _ : state)
+    {
+        TValue x{ static_cast<TValue>(static_cast<int16_t>(s_x)) }, y{ static_cast<TValue>(static_cast<int16_t>(s_y)) };
+        benchmark::DoNotOptimize(func(x, y));
+    }
 }
 
 #define FUNC(TYPE, OP) \
-	[](TYPE x, TYPE y) -> TYPE { return x OP y; }
+    [](TYPE x, TYPE y) -> TYPE { return x OP y; }
 
 using CnlFixed16 = cnl::fixed_point<std::int32_t, -16>;
 

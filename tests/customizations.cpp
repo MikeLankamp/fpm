@@ -24,7 +24,7 @@ TYPED_TEST(customizations, hash)
 {
     using P = TypeParam;
 
-	const std::hash<P> hash{};
+    const std::hash<P> hash{};
     for (int y = -50; y < 50; ++y)
     {
         EXPECT_EQ(hash(P{y}/10), hash(P{y}/10));
