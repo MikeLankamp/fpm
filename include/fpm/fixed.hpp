@@ -1,5 +1,5 @@
-#ifndef FPM_FIXED_H
-#define FPM_FIXED_H
+#ifndef FPM_FIXED_HPP
+#define FPM_FIXED_HPP
 
 #include <cassert>
 #include <cmath>

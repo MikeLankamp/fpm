@@ -1,5 +1,5 @@
-#ifndef FPM_MATH_H
-#define FPM_MATH_H
+#ifndef FPM_MATH_HPP
+#define FPM_MATH_HPP
 
 #include "fixed.hpp"
 #include <cmath>

@@ -1,3 +1,6 @@
+#ifndef FPM_TESTS_COMMON_HPP
+#define FPM_TESTS_COMMON_HPP
+
 #include <fpm/fixed.hpp>
 #include <gtest/gtest.h>
 #include <iomanip>
@@ -24,3 +27,5 @@ inline ::testing::AssertionResult HasMaximumError(double value, double reference
         return ::testing::AssertionSuccess();
     return ::testing::AssertionFailure() << value << " is not within " << (max_error * 100) << "% of " << reference;
 }
+
+#endif

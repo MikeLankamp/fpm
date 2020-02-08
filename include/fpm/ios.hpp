@@ -1,5 +1,5 @@
-#ifndef FPM_IOS_H
-#define FPM_IOS_H
+#ifndef FPM_IOS_HPP
+#define FPM_IOS_HPP
 
 #include "fixed.hpp"
 #include "math.hpp"
