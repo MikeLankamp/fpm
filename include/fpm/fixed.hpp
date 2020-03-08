@@ -379,7 +379,7 @@ struct numeric_limits<fpm::fixed<B,I,F>>
     static constexpr int digits10 = 1;
 
     // This is equal to max_digits10 for the integer and fractional part together.
-    static const int max_digits10 =
+    static constexpr int max_digits10 =
         fpm::detail::max_digits10(std::numeric_limits<B>::digits - F) + fpm::detail::max_digits10(F);
 
     static constexpr int radix = 2;
