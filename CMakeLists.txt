@@ -87,7 +87,7 @@ set(LIBCNL_ROOT "${CMAKE_CURRENT_BINARY_DIR}/libcnl")
 
 ExternalProject_Add(libcnl-external
   GIT_REPOSITORY "https://github.com/johnmcfarlane/cnl"
-  GIT_TAG d6df27818fbc7f6de17af60e0cacae8443592c93
+  GIT_TAG 4d445566fe7c6c8939fffc145a2f30fd587796a6
   PREFIX ${LIBCNL_ROOT}
   CONFIGURE_COMMAND ""
   BUILD_COMMAND ""
