@@ -18,7 +18,6 @@ template <typename CharT, typename B, typename I, unsigned int F>
 std::basic_ostream<CharT>& operator<<(std::basic_ostream<CharT>& os, fixed<B, I, F> x) noexcept
 {
     const auto uppercase = ((os.flags() & std::ios_base::uppercase) != 0);
-    // const auto showbase = ((os.flags() & std::ios_base::showbase) != 0); // Unused
     const auto showpoint = ((os.flags() & std::ios_base::showpoint) != 0);
     const auto adjustfield = (os.flags() & std::ios_base::adjustfield);
     const auto width = os.width();
@@ -677,7 +676,6 @@ std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>&
     constexpr auto MaxValue = (I{1} << sizeof(B) * 8) - 1;
 
     // Parse the integer part
-    // bool significand_overflow = false; // Never used
     I integer = 0;
     for (std::size_t i = 0; i < fraction_start; ++i) {
         if (integer > MaxInt / base) {

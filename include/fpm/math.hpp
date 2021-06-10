@@ -542,8 +542,6 @@ inline fixed<B, I, F> cos(fixed<B, I, F> x) noexcept
 template <typename B, typename I, unsigned int F>
 inline fixed<B, I, F> tan(fixed<B, I, F> x) noexcept
 {
-    // using Fixed = fixed<B, I, F>; // Unused
-
     auto cx = cos(x);
 
     // Tangent goes to infinity at 90 and -90 degrees.
