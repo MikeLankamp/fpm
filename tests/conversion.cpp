@@ -1,10 +1,38 @@
 #include "common.hpp"
+#include <utility>
 
 using P = fpm::fixed_16_16;
+using Q = fpm::fixed_24_8;
 
 TEST(conversion, construction)
 {
     P x;
+}
+
+TEST(conversion, copy)
+{
+    const P x(12);
+
+    // Copy ctor
+    P y(x);
+    EXPECT_EQ(P(12), y);
+
+    // Copy assignment
+    P z = x;
+    EXPECT_EQ(P(12), y);
+}
+
+TEST(conversion, move)
+{
+    const P x(12);
+
+    // Move ctor
+    P y(std::move(x));
+    EXPECT_EQ(P(12), y);
+
+    // Move assignment
+    P z = std::move(x);
+    EXPECT_EQ(P(12), y);
 }
 
 TEST(conversion, floats)
@@ -35,4 +63,32 @@ TEST(conversion, fixed_point)
     // This should round up to 1
     EXPECT_EQ(P(-1), P::from_fixed_point<20>(-1048575));
     EXPECT_EQ(P(1), P::from_fixed_point<20>(1048575));
+}
+
+TEST(conversion, fixed_to_fixed)
+{
+    EXPECT_EQ(Q(1), Q(P(1)));
+    EXPECT_EQ(Q(1), Q(P(1)));
+
+    // Conversion to fewer fraction bits should round
+    EXPECT_EQ(Q::from_raw_value(0x13), Q(P::from_raw_value(0x12ff)));
+    EXPECT_EQ(Q::from_raw_value(0x12), Q(P::from_raw_value(0x127f)));
+    EXPECT_EQ(Q::from_raw_value(-0x13), Q(P::from_raw_value(-0x12ff)));
+    EXPECT_EQ(Q::from_raw_value(-0x12), Q(P::from_raw_value(-0x127f)));
+
+    // Conversion to more fraction bits should zero-extend
+    EXPECT_EQ(P::from_raw_value(0x1200), P(Q::from_raw_value(0x12)));
+    EXPECT_EQ(P::from_raw_value(-0x1200), P(Q::from_raw_value(-0x12)));
+
+    {
+        // Assignment requires explicit conversion via construction
+        P p(1);
+        Q q = Q(p);
+        EXPECT_EQ(Q(1), q);
+    }
+
+    // Conversion to a smaller base type should truncate the upper bits
+    using S1 = fpm::fixed<std::int8_t, std::int16_t, 1>;
+    EXPECT_EQ(0x56, S1(P::from_raw_value(0x79AB1000)).raw_value());
+    EXPECT_EQ(-0x56, S1(P::from_raw_value(-0x79AB1000)).raw_value());
 }

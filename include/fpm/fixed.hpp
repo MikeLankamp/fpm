@@ -47,6 +47,13 @@ public:
         : m_value(static_cast<BaseType>(std::round(val * FRACTION_MULT)))
     {}
 
+    // Constructs from another fixed-point type with possibly different underlying representation.
+    // Like static_cast, this truncates bits that don't fit.
+    template <typename B, typename I, unsigned int F>
+    constexpr inline explicit fixed(fixed<B,I,F> val) noexcept
+        : m_value(from_fixed_point<F>(val.raw_value()).raw_value())
+    {}
+
     // Explicit conversion to a floating-point type
     template <typename T, typename std::enable_if<std::is_floating_point<T>::value>::type* = nullptr>
     constexpr inline explicit operator T() const noexcept

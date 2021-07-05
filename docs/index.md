@@ -53,7 +53,7 @@ The header `<fpm/fixed.hpp>` provides specializations for `fpm::fixed` for the f
 * `std::hash`
 * `std::numeric_limits`
 
-## Conversion to and from float
+## Conversions
 The intent behind `fpm` is to replace floats for purposes of performance or portability. Thus, it guards against accidental usage of floats by requiring explicit conversion:
 ```c++
 fpm::fixed_16_16 a = 0.5;        // Error: implicit construction from float
@@ -72,6 +72,9 @@ int d = b;                     // Error: requires explicit conversion
 int e = static_cast<int>(b);   // OK: explicit conversion to int
 ```
 You must still guard against underflow and overflow, though.
+
+`fpm::fixed<A, B, C>` can be constructed from an `fpm::fixed<D, E, F>` via explicit construction. This allows for conversion between fixed-point numbers of differing precision and range.
+Depending on the respective underlying types and number of fraction bits, this conversion may throw away high bits in the integral or low bits in the fraction.
 
 ## Printing and reading fixed-point numbers
 The `<fpm/ios.hpp>` header provides streaming operators. Simply stream an expression of type `fpm::fixed` to or from a `std::ostream`.
