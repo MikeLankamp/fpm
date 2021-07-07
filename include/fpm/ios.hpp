@@ -642,7 +642,7 @@ std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>&
     // We've parsed all we need. Construct the value.
     if (exponent_overflow) {
         // Absolute exponent is too large
-        if (std::all_of(significand.begin(), significand.end(), [](auto x){ return x == 0; })) {
+        if (std::all_of(significand.begin(), significand.end(), [](unsigned char x){ return x == 0; })) {
             // Significand is zero. Exponent doesn't matter.
             x = fixed<B, I, F>(0);
         } else if (exponent_negate) {

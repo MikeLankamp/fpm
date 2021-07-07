@@ -106,20 +106,12 @@ private:
     std::stringstream create_stream() const
     {
         std::stringstream ss;
-        ss.setf(combine_or(GetParam(), std::make_index_sequence<4>{}));
+        ss.setf(std::get<0>(GetParam()) | std::get<1>(GetParam()) | std::get<2>(GetParam()) | std::get<3>(GetParam()));
         ss.precision(std::get<4>(GetParam()));
         ss.width(std::get<5>(GetParam()));
         ss.fill(std::get<6>(GetParam()));
         ss.imbue(std::get<7>(GetParam()));
         return ss;
-    }
-
-    template <std::size_t... I>
-    static fmtflags combine_or(const Flags& flags, std::index_sequence<I...>)
-    {
-        fmtflags result{};
-        std::make_tuple((result |= std::get<I>(flags))...);
-        return result;
     }
 };
 
