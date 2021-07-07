@@ -51,8 +51,8 @@ struct Limits<fpm::fixed_16_16>
     static constexpr int max_exponent() noexcept { return  15; }
     static constexpr int min_exponent10() noexcept { return -4; }
     static constexpr int max_exponent10() noexcept { return 4; }
-    static constexpr auto min() noexcept { return fpm::fixed_16_16::from_raw_value(-2147483647 - 1); }
-    static constexpr auto max() noexcept { return fpm::fixed_16_16::from_raw_value( 2147483647); }
+    static constexpr fpm::fixed_16_16 min() noexcept { return fpm::fixed_16_16::from_raw_value(-2147483647 - 1); }
+    static constexpr fpm::fixed_16_16 max() noexcept { return fpm::fixed_16_16::from_raw_value( 2147483647); }
 };
 
 template <>
@@ -65,8 +65,8 @@ struct Limits<fpm::fixed_24_8>
     static constexpr int max_exponent() noexcept { return 23; }
     static constexpr int min_exponent10() noexcept { return -2; }
     static constexpr int max_exponent10() noexcept { return 6; }
-    static constexpr auto min() noexcept { return fpm::fixed_24_8::from_raw_value(-2147483647 - 1); }
-    static constexpr auto max() noexcept { return fpm::fixed_24_8::from_raw_value( 2147483647); }
+    static constexpr fpm::fixed_24_8 min() noexcept { return fpm::fixed_24_8::from_raw_value(-2147483647 - 1); }
+    static constexpr fpm::fixed_24_8 max() noexcept { return fpm::fixed_24_8::from_raw_value( 2147483647); }
 };
 
 template <>
@@ -79,8 +79,8 @@ struct Limits<fpm::fixed_8_24>
     static constexpr int max_exponent() noexcept { return  7; }
     static constexpr int min_exponent10() noexcept { return -7; }
     static constexpr int max_exponent10() noexcept { return  2; }
-    static constexpr auto min() noexcept { return fpm::fixed_8_24::from_raw_value(-2147483647 - 1); }
-    static constexpr auto max() noexcept { return fpm::fixed_8_24::from_raw_value( 2147483647); }
+    static constexpr fpm::fixed_8_24 min() noexcept { return fpm::fixed_8_24::from_raw_value(-2147483647 - 1); }
+    static constexpr fpm::fixed_8_24 max() noexcept { return fpm::fixed_8_24::from_raw_value( 2147483647); }
 };
 
 TYPED_TEST(customizations, numeric_limits)

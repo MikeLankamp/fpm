@@ -30,7 +30,7 @@ add_executable(fpm-test
   tests/power.cpp
   tests/trigonometry.cpp
 )
-set_target_properties(fpm-test PROPERTIES CXX_STANDARD 14)
+set_target_properties(fpm-test PROPERTIES CXX_STANDARD 11)
 target_link_libraries(fpm-test PRIVATE fpm gtest_main)
 gtest_add_tests(TARGET fpm-test)
 
