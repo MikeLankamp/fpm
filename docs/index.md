@@ -23,7 +23,7 @@ You may wish to typedef a particular choice of underlying type, intermediate typ
 ```c++
 using position = fpm::fixed<std::int32_t, std::int64_t, 16>;
 ```
-This defines a signed 16.16 fixed-point number with a range of -32768 to 65535.999985... and a resolution of 0.0000153... It uses 64-bit integers as intermediate type during calculations to avoid loss of information.
+This defines a signed 16.16 fixed-point number with a range of -32768 to 32767.999985... and a resolution of 0.0000153... It uses 64-bit integers as intermediate type during calculations to avoid loss of information.
 
 For your convenience, several popular fixed-point formats have been defined in the `fpm` namespace:
 ```c++
