@@ -57,8 +57,8 @@ std::basic_ostream<CharT>& operator<<(std::basic_ostream<CharT>& os, fixed<B, I,
     // The value of the number is: raw / divisor * (10|2) ^ exponent
     // The base of the exponent is 2 in hexfloat mode, or 10 otherwise.
     struct number_t {
-        B raw;          // raw fixed-point value
-        B divisor;      // the divisor indicating the place of the decimal point
+        I raw;          // raw fixed-point value
+        I divisor;      // the divisor indicating the place of the decimal point
         int exponent;   // the exponent applied
     };
 
@@ -80,7 +80,7 @@ std::basic_ostream<CharT>& operator<<(std::basic_ostream<CharT>& os, fixed<B, I,
         return value;
     };
 
-    number_t value = { x.raw_value(), B{1} << F, 0};
+    number_t value = { x.raw_value(), I{1} << F, 0};
 
     auto base = B{10};
 
@@ -106,7 +106,7 @@ std::basic_ostream<CharT>& operator<<(std::basic_ostream<CharT>& os, fixed<B, I,
         {
             auto bit  = detail::find_highest_bit(value.raw);
             value.exponent = bit - F;    // exponent is applied to base 2
-            value.divisor = B{1} << bit; // divisor is at the highest bit, ensuring it starts with "1."
+            value.divisor = I{1} << bit; // divisor is at the highest bit, ensuring it starts with "1."
             precision = (bit + 3) / 4;   // precision is number of nibbles, so we show all of them
         }
         base = 16;
@@ -155,7 +155,7 @@ std::basic_ostream<CharT>& operator<<(std::basic_ostream<CharT>& os, fixed<B, I,
     }
 
     // Separate out the integral part of the number
-    B integral = value.raw / value.divisor;
+    I integral = value.raw / value.divisor;
     value.raw %= value.divisor;
 
     // Here we start printing the number itself
