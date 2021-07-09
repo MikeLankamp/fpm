@@ -18,15 +18,23 @@ namespace detail
 {
 
 // Returns the index of the most-signifcant set bit
-inline long find_highest_bit(unsigned long value) noexcept
+inline long find_highest_bit(unsigned long long value) noexcept
 {
     assert(value != 0);
 #if defined(_MSC_VER)
     unsigned long index;
-    _BitScanReverse(&index, value);
+#if defined(_WIN64)
+    _BitScanReverse64(&index, value);
+#else
+    if (_BitScanReverse(&index, static_cast<unsigned long>(value >> 32)) != 0) {
+        index += 32;
+    } else {
+        _BitScanReverse(&index, static_cast<unsigned long>(value & 0xfffffffflu));
+    }
+#endif
     return index;
 #elif defined(__GNUC__) || defined(__clang__)
-    return sizeof(value) * 8 - 1 - __builtin_clzl(value);
+    return sizeof(value) * 8 - 1 - __builtin_clzll(value);
 #else
 #   error "your platform does not support find_highest_bit()"
 #endif

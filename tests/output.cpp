@@ -305,3 +305,31 @@ TEST_F(output_rounding, scientific_rounding)
     test(0.09375, 0, std::ios::scientific);
     test(0.09375, 1, std::ios::scientific);
 }
+
+class output_specific : public ::testing::Test
+{
+protected:
+    template <typename Fixed>
+    void test(const char* expected, Fixed value, int precision, std::ios::fmtflags flags = std::ios::fixed)
+    {
+        std::stringstream ss;
+        ss << std::setiosflags(flags) << std::setprecision(precision) << value;
+        EXPECT_EQ(expected, ss.str());
+    }
+};
+
+TEST_F(output_specific, type_limit)
+{
+    using F4 = fpm::fixed<std::int8_t, std::int16_t, 4>;
+    using F16 = fpm::fixed_16_16;
+
+    test("-32768.000", F16::from_raw_value(-2147483647 - 1), 3, std::ios::fixed);
+    test("-3.277e+04", F16::from_raw_value(-2147483647 - 1), 3, std::ios::scientific);
+    test("32768.000", F16::from_raw_value(2147483647), 3, std::ios::fixed);
+    test("3.277e+04", F16::from_raw_value(2147483647), 3, std::ios::scientific);
+
+    test("-8.000", F4::from_raw_value(-127 - 1), 3, std::ios::fixed);
+    test("-8.000e+00", F4::from_raw_value(-127 - 1), 3, std::ios::scientific);
+    test("7.938", F4::from_raw_value(127), 3, std::ios::fixed);
+    test("7.938e+00", F4::from_raw_value(127), 3, std::ios::scientific);
+}
