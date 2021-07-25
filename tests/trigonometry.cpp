@@ -133,3 +133,28 @@ TEST(trigonometry, atan2)
     EXPECT_DEATH(atan2(P(0), P(0)), "");
 #endif
 }
+
+// Naively, atan2(y, x) does y / x which would overflow for near-zero x with Q16.16.
+// Test that we've got protections in place for this.
+TEST(trigonometry, atan2_near_zero)
+{
+    constexpr auto MAX_ERROR_PERC = 0.025;
+    using P = fpm::fixed_16_16;
+
+    const auto x = P::from_raw_value(1);
+    const auto y = P(100);
+
+    // Positive x
+    {
+        auto atan2_real = std::atan2(static_cast<double>(y), static_cast<double>(x));
+        auto atan2_fixed = static_cast<double>(atan2(y, x));
+        EXPECT_TRUE(HasMaximumError(atan2_fixed, atan2_real, MAX_ERROR_PERC));
+    }
+
+    // Negative x
+    {
+        auto atan2_real = std::atan2(static_cast<double>(y), static_cast<double>(-x));
+        auto atan2_fixed = static_cast<double>(atan2(y, -x));
+        EXPECT_TRUE(HasMaximumError(atan2_fixed, atan2_real, MAX_ERROR_PERC));
+    }
+}
