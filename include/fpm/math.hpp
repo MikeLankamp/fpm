@@ -559,6 +559,58 @@ inline fixed<B, I, F> tan(fixed<B, I, F> x) noexcept
     return sin(x) / cx;
 }
 
+namespace detail {
+
+// Calculates atan(x) assuming that x is in the range [0,1]
+template <typename B, typename I, unsigned int F>
+fixed<B, I, F> atan_sanitized(fixed<B, I, F> x) noexcept
+{
+    using Fixed = fixed<B, I, F>;
+    assert(x >= Fixed(0) && x <= Fixed(1));
+
+    constexpr auto fA = Fixed::template from_fixed_point<63>(  716203666280654660ll); //  0.0776509570923569
+    constexpr auto fB = Fixed::template from_fixed_point<63>(-2651115102768076601ll); // -0.287434475393028
+    constexpr auto fC = Fixed::template from_fixed_point<63>( 9178930894564541004ll); //  0.995181681698119  (PI/4 - A - B)
+
+    const auto xx = x * x;
+    return ((fA*xx + fB)*xx + fC)*x;
+}
+
+// Calculate atan(y / x), assuming x != 0.
+//
+// If x is very, very small, y/x can easily overflow the fixed-point range.
+// If q = y/x and q > 1, atan(q) would calculate atan(1/q) as intermediate step
+// anyway. We can shortcut that here and avoid the loss of information, thus
+// improving the accuracy of atan(y/x) for very small x.
+template <typename B, typename I, unsigned int F>
+fixed<B, I, F> atan_div(fixed<B, I, F> y, fixed<B, I, F> x) noexcept
+{
+    using Fixed = fixed<B, I, F>;
+    assert(x != Fixed(0));
+
+    // Make sure y and x are positive.
+    // If y / x is negative (when y or x, but not both, are negative), negate the result to
+    // keep the correct outcome.
+    if (y < Fixed(0)) {
+        if (x < Fixed(0)) {
+            return atan_div(-y, -x);
+        }
+        return -atan_div(-y, x);
+    }
+    if (x < Fixed(0)) {
+        return -atan_div(y, -x);
+    }
+    assert(y >= Fixed(0));
+    assert(x >  Fixed(0));
+
+    if (y > x) {
+        return Fixed::half_pi() - detail::atan_sanitized(x / y);
+    }
+    return detail::atan_sanitized(y / x);
+}
+
+}
+
 template <typename B, typename I, unsigned int F>
 fixed<B, I, F> atan(fixed<B, I, F> x) noexcept
 {
@@ -570,15 +622,10 @@ fixed<B, I, F> atan(fixed<B, I, F> x) noexcept
 
     if (x > Fixed(1))
     {
-        return Fixed::half_pi() - atan(Fixed(1) / x);
+        return Fixed::half_pi() - detail::atan_sanitized(Fixed(1) / x);
     }
 
-    constexpr auto fA = Fixed::template from_fixed_point<63>(  716203666280654660ll); //  0.0776509570923569
-    constexpr auto fB = Fixed::template from_fixed_point<63>(-2651115102768076601ll); // -0.287434475393028
-    constexpr auto fC = Fixed::template from_fixed_point<63>( 9178930894564541004ll); //  0.995181681698119  (PI/4 - A - B)
-
-    const auto xx = x * x;
-    return ((fA*xx + fB)*xx + fC)*x;
+    return detail::atan_sanitized(x);
 }
 
 template <typename B, typename I, unsigned int F>
@@ -592,7 +639,7 @@ fixed<B, I, F> asin(fixed<B, I, F> x) noexcept
     {
         return copysign(Fixed::half_pi(), x);
     }
-    return atan(x / sqrt(yy));
+    return detail::atan_div(x, sqrt(yy));
 }
 
 template <typename B, typename I, unsigned int F>
@@ -606,7 +653,7 @@ fixed<B, I, F> acos(fixed<B, I, F> x) noexcept
         return Fixed::pi();
     }
     const auto yy = Fixed(1) - x * x;
-    return Fixed(2)*atan(sqrt(yy) / (Fixed(1) + x));
+    return Fixed(2)*detail::atan_div(sqrt(yy), Fixed(1) + x);
 }
 
 template <typename B, typename I, unsigned int F>
@@ -618,7 +665,9 @@ fixed<B, I, F> atan2(fixed<B, I, F> y, fixed<B, I, F> x) noexcept
         assert(y != Fixed(0));
         return (y > Fixed(0)) ? Fixed::half_pi() : -Fixed::half_pi();
     }
-    auto ret = atan(y / x);
+
+    auto ret = detail::atan_div(y, x);
+
     if (x < Fixed(0))
     {
         return (y >= Fixed(0)) ? ret + Fixed::pi() : ret - Fixed::pi();
