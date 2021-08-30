@@ -43,3 +43,10 @@ TEST(arithmethic_int, division_range)
     // wrong results without the intermediate type.
     EXPECT_EQ(P(32), P(256) / 8);
 }
+
+TEST(arithmethic_int, modulo)
+{
+    using P = fpm::fixed_24_8;
+
+    EXPECT_EQ(P(0), P(3.5) * 7);
+}
