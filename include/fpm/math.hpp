@@ -71,9 +71,9 @@ constexpr inline bool isnan(fixed<B, I, F>) noexcept
 }
 
 template <typename B, typename I, unsigned int F>
-constexpr inline bool isnormal(fixed<B, I, F>) noexcept
+constexpr inline bool isnormal(fixed<B, I, F> x) noexcept
 {
-    return true;
+    return x.raw_value() != 0;
 }
 
 template <typename B, typename I, unsigned int F>

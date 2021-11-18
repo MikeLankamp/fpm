@@ -43,7 +43,7 @@ TEST(classification, isnormal)
     EXPECT_TRUE(isnormal(P(1.0)));
     EXPECT_TRUE(isnormal(P(-1.0)));
     EXPECT_TRUE(isnormal(P(0.5)));
-    EXPECT_TRUE(isnormal(P(0)));
+    EXPECT_FALSE(isnormal(P(0)));
 }
 
 TEST(classification, signbit)
