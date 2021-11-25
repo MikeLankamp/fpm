@@ -41,6 +41,17 @@ TEST(conversion, floats)
     EXPECT_EQ(1.125, static_cast<double>(P{1.125}));
 }
 
+TEST(conversion, float_rounding)
+{
+    // Small number of fraction bits to test rounding
+    using Q = fpm::fixed<std::int32_t, std::int64_t, 2>;
+
+    EXPECT_EQ(1.25, static_cast<double>(Q{1.125}));
+    EXPECT_EQ(1.5, static_cast<double>(Q{1.375}));
+    EXPECT_EQ(-1.25, static_cast<double>(Q{-1.125}));
+    EXPECT_EQ(-1.5, static_cast<double>(Q{-1.375}));
+}
+
 TEST(conversion, ints)
 {
     EXPECT_EQ(-125, static_cast<int>(P{-125}));
