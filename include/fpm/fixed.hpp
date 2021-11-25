@@ -44,7 +44,7 @@ public:
     // Like static_cast, this truncates bits that don't fit.
     template <typename T, typename std::enable_if<std::is_floating_point<T>::value>::type* = nullptr>
     constexpr inline explicit fixed(T val) noexcept
-        : m_value(static_cast<BaseType>(std::round(val * FRACTION_MULT)))
+        : m_value(static_cast<BaseType>((val >= 0.0) ? (val * FRACTION_MULT + T{0.5}) : (val * FRACTION_MULT - T{0.5})))
     {}
 
     // Constructs from another fixed-point type with possibly different underlying representation.
