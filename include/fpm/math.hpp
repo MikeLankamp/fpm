@@ -252,7 +252,6 @@ template <typename B, typename I, unsigned int F, typename T, typename std::enab
 fixed<B, I, F> pow(fixed<B, I, F> base, T exp) noexcept
 {
     using Fixed = fixed<B, I, F>;
-    constexpr auto FRAC = B(1) << F;
 
     if (base == Fixed(0)) {
         assert(exp > 0);
