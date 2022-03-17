@@ -13,9 +13,9 @@
     "url": "https://github.com/MikeLankamp/fpm.git"
   },
   "build": {
+    "srcFilter": "-<*> +<include/>",
     "includeDir": "include"
   },
-  "srcFilter": "-<*> +<include/>",
   "export": {
     "include": [
       "include",
