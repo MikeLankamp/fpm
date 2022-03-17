@@ -15,6 +15,7 @@
   "build": {
     "includeDir": "include"
   },
+  "srcFilter": "-<*> +<include/>",
   "export": {
     "include": [
       "include",
