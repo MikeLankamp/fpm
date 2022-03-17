@@ -1,0 +1,27 @@
+{
+  "name": "fpm",
+  "version": "1.1.0",
+  "authors": {
+    "name": "Mike Lankamp",
+  },
+  "homepage": "https://mikelankamp.github.io/fpm/",
+  "license": "MIT",
+  "description": "A C++ header-only fixed-point math library.",
+  "keywords": "c-plus-plus, cpp, algorithms, numbers",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MikeLankamp/fpm.git"
+  },
+  "build": {
+    "includeDir": "include"
+  },
+  "export": {
+    "include": [
+      "include",
+      "LICENSE",
+      "README.md"
+    ]
+  },
+  "platforms": "*",
+  "frameworks": "*"
+}
