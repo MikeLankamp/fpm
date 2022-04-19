@@ -20,8 +20,7 @@ class fixed
 {
     static_assert(std::is_integral<BaseType>::value, "BaseType must be an integral type");
     static_assert(FractionBits > 0, "FractionBits must be greater than zero");
-    static_assert(FractionBits <= sizeof(BaseType) * 8, "BaseType must at least be able to contain entire fraction");
-    static_assert(FractionBits <= 62, "Fraction may be no more than 62 bits");
+    static_assert(FractionBits <= sizeof(BaseType) * 8 - 2, "Fraction may be no more than [sizeof(BaseType) * 8 - 2] bits");
     static_assert(sizeof(IntermediateType) > sizeof(BaseType), "IntermediateType must be larger than BaseType");
     static_assert(std::is_signed<IntermediateType>::value == std::is_signed<BaseType>::value, "IntermediateType must have same signedness as BaseType");
 
