@@ -20,12 +20,13 @@ class fixed
 {
     static_assert(std::is_integral<BaseType>::value, "BaseType must be an integral type");
     static_assert(FractionBits > 0, "FractionBits must be greater than zero");
-    static_assert(FractionBits <= sizeof(BaseType) * 8, "BaseType must at least be able to contain entire fraction");
-    static_assert(FractionBits <= 62, "Fraction may be no more than 62 bits");
+    static_assert(FractionBits <= sizeof(BaseType) * 8 - 1, "BaseType must at least be able to contain entire fraction, with space for at least one integral bit");
     static_assert(sizeof(IntermediateType) > sizeof(BaseType), "IntermediateType must be larger than BaseType");
     static_assert(std::is_signed<IntermediateType>::value == std::is_signed<BaseType>::value, "IntermediateType must have same signedness as BaseType");
 
-    static constexpr BaseType FRACTION_MULT = BaseType(1) << FractionBits;
+    // Although this value fits in the BaseType in terms of bits, if there's only one integral bit, this value
+    // is incorrect (flips from positive to negative), so we must extend the size to IntermediateType.
+    static constexpr IntermediateType FRACTION_MULT = IntermediateType(1) << FractionBits;
 
     struct raw_construct_tag {};
     constexpr inline fixed(BaseType val, raw_construct_tag) noexcept : m_value(val) {}

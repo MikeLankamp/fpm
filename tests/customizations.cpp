@@ -119,3 +119,15 @@ TYPED_TEST(customizations, numeric_limits)
     EXPECT_EQ(L::round_error(), TypeParam(0.5));
     EXPECT_EQ(L::denorm_min(), TL::min());
 }
+
+// Verify that a a type with a single integral bit works correctly
+TEST(customizations, numeric_limits_edge)
+{
+    using Q15 = fpm::fixed<std::int16_t, std::int32_t, 15>;
+    EXPECT_TRUE(HasMaximumError(static_cast<double>(std::numeric_limits<Q15>::max()), 0.999, 0.01));
+    EXPECT_EQ(-1.0, static_cast<double>(std::numeric_limits<Q15>::lowest()));
+
+    using Q31 = fpm::fixed<std::int32_t, std::int64_t, 31>;
+    EXPECT_TRUE(HasMaximumError(static_cast<double>(std::numeric_limits<Q31>::max()), 0.999, 0.01));
+    EXPECT_EQ(-1.0, static_cast<double>(std::numeric_limits<Q31>::lowest()));
+}
