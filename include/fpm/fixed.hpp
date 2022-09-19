@@ -372,7 +372,7 @@ struct numeric_limits<fpm::fixed<B,I,F>>
     static constexpr bool has_infinity = false;
     static constexpr bool has_quiet_NaN = false;
     static constexpr bool has_signaling_NaN = false;
-    static constexpr bool has_denorm = std::denorm_absent;
+    static constexpr std::float_denorm_style has_denorm = std::denorm_absent;
     static constexpr bool has_denorm_loss = false;
     static constexpr std::float_round_style round_style = std::round_to_nearest;
     static constexpr bool is_iec_559 = false;
@@ -438,7 +438,7 @@ constexpr bool numeric_limits<fpm::fixed<B,I,F>>::has_quiet_NaN;
 template <typename B, typename I, unsigned int F>
 constexpr bool numeric_limits<fpm::fixed<B,I,F>>::has_signaling_NaN;
 template <typename B, typename I, unsigned int F>
-constexpr bool numeric_limits<fpm::fixed<B,I,F>>::has_denorm;
+constexpr std::float_denorm_style numeric_limits<fpm::fixed<B,I,F>>::has_denorm;
 template <typename B, typename I, unsigned int F>
 constexpr bool numeric_limits<fpm::fixed<B,I,F>>::has_denorm_loss;
 template <typename B, typename I, unsigned int F>
