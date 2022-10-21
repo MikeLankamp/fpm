@@ -2,3 +2,9 @@
 /.vscode
 /build
 /CMakeSettings.json
+
+# Conan files
+/cmake-build-*
+/CMakeUserPresets.json
+/test_package/build
+/graph_info.json

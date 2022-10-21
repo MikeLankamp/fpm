@@ -1,0 +1,33 @@
+name: build
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        build_type: ['Debug','Release']
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Conan
+        id: conan
+        uses: turtlebrowser/get-conan@v1.0
+
+      - name: Print Conan version
+        run: echo "Using Conan ${{ steps.conan.outputs.version }}"
+
+      - name: Create default Conan profile
+        run: conan profile new default --detect
+
+      - name: Build project in ${{ matrix.build_type }} mode
+        run: conan create . -s build_type=${{ matrix.build_type }}

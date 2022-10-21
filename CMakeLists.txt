@@ -8,9 +8,13 @@ add_library(fpm INTERFACE)
 
 target_include_directories(fpm INTERFACE include)
 
+include(GNUInstallDirs)
+install(DIRECTORY include/fpm DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
 #
 # Test suite
 #
+find_package(GTest REQUIRED)
 enable_testing()
 include(GoogleTest)
 
@@ -31,7 +35,7 @@ add_executable(fpm-test
   tests/trigonometry.cpp
 )
 set_target_properties(fpm-test PROPERTIES CXX_STANDARD 11)
-target_link_libraries(fpm-test PRIVATE fpm gtest_main)
+target_link_libraries(fpm-test PRIVATE fpm GTest::gtest_main)
 gtest_add_tests(TARGET fpm-test)
 
 #
@@ -102,12 +106,13 @@ add_dependencies(libcnl libcnl-external)
 # Benchmark tool.
 # Runs benchmarks of FPM operations and dumps results to standard output.
 #
+find_package(benchmark REQUIRED)
 add_executable(fpm-benchmark
 	benchmarks/arithmetic.cpp
 	benchmarks/power.cpp
 	benchmarks/trigonometry.cpp
 )
-target_link_libraries(fpm-benchmark PRIVATE fpm libfixmath libcnl benchmark benchmark_main)
+target_link_libraries(fpm-benchmark PRIVATE fpm libfixmath libcnl benchmark::benchmark_main)
 
 #
 # Accuracy tool.
@@ -193,6 +198,3 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
 
   add_custom_target(fpm-performance-images DEPENDS ${IMG_FILE_PERFORMANCE})
 endif()
-
-add_subdirectory(3rdparty/googlebench)
-add_subdirectory(3rdparty/googletest)
