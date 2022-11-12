@@ -16,6 +16,9 @@ install(FILES
   include/fpm/math.hpp
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/fpm)
 
+OPTION(BUILD_ACCURACY  "fpm accuracy"  ON)
+OPTION(BUILD_BENCHMARK "fpm benchmark" ON)
+
 #
 # Test suite
 #
@@ -46,6 +49,8 @@ gtest_add_tests(TARGET fpm-test)
 # libfixmath for alternative comparison
 #
 include(ExternalProject)
+
+if (BUILD_ACCURACY OR BUILD_BENCHMARK)
 
 # Libfixmath uses a Makefile with hardcoded compiler (gcc).
 # So we need to define our own build rules.
@@ -88,6 +93,9 @@ target_compile_definitions(libfixmath
 target_include_directories(libfixmath PUBLIC ${LIBFIXMATH_ROOT}/src/libfixmath-external/libfixmath)
 add_dependencies(libfixmath libfixmath-external)
 
+endif()
+
+if (BUILD_ACCURACY OR BUILD_BENCHMARK)
 #
 # CNL for alternative comparison
 #
@@ -105,7 +113,9 @@ ExternalProject_Add(libcnl-external
 add_library(libcnl INTERFACE)
 target_include_directories(libcnl INTERFACE ${LIBCNL_ROOT}/src/libcnl-external/include)
 add_dependencies(libcnl libcnl-external)
+endif()
 
+if (BUILD_BENCHMARK)
 #
 # Benchmark tool.
 # Runs benchmarks of FPM operations and dumps results to standard output.
@@ -116,7 +126,9 @@ add_executable(fpm-benchmark
 	benchmarks/trigonometry.cpp
 )
 target_link_libraries(fpm-benchmark PRIVATE fpm libfixmath libcnl benchmark benchmark_main)
+endif()
 
+if (BUILD_ACCURACY)
 #
 # Accuracy tool.
 # Dumps the accuracy of approximated FPM functions to JSON files.
@@ -126,13 +138,13 @@ add_executable(fpm-accuracy
 )
 set_target_properties(fpm-accuracy PROPERTIES CXX_STANDARD 14)
 target_link_libraries(fpm-accuracy PRIVATE fpm libfixmath)
+endif()
 
+set(DATA_DIR ${CMAKE_CURRENT_BINARY_DIR})
 
 include(FindGnuplot)
-if (GNUPLOT_FOUND)
+if (GNUPLOT_FOUND AND BUILD_ACCURACY)
   # Create accuracy data
-  set(DATA_DIR ${CMAKE_CURRENT_BINARY_DIR})
-
   set(DATA_FILES_ACCURACY "")
   set(IMG_FILES_ACCURACY "")
   foreach(DATA sin-trig cos-trig tan-trig asin-invtrig acos-invtrig atan-invtrig atan2-trig sqrt-auto cbrt-auto pow-auto exp-auto exp2-auto log-auto log2-auto log10-auto)
@@ -166,7 +178,7 @@ if (GNUPLOT_FOUND)
   add_custom_target(fpm-accuracy-images DEPENDS ${IMG_FILES_ACCURACY})
 endif()
 
-if (CMAKE_BUILD_TYPE STREQUAL "Release")
+if (CMAKE_BUILD_TYPE STREQUAL "Release" AND GNUPLOT_FOUND AND BUILD_BENCHMARK)
   # Enable the performance data-generation command only for Release builds.
 
   set(DATA_FILE_PERFORMANCE_JSON ${DATA_DIR}/performance.json)
@@ -202,5 +214,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
   add_custom_target(fpm-performance-images DEPENDS ${IMG_FILE_PERFORMANCE})
 endif()
 
-add_subdirectory(3rdparty/googlebench)
+if (BUILD_BENCHMARK)
+  add_subdirectory(3rdparty/googlebench)
+endif()
 add_subdirectory(3rdparty/googletest)
