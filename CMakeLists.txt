@@ -18,10 +18,19 @@ install(FILES
 
 OPTION(BUILD_ACCURACY  "fpm accuracy"  ON)
 OPTION(BUILD_BENCHMARK "fpm benchmark" ON)
+OPTION(BUILD_TESTS     "fpm tests"     ON)
+
+# only build tests & benchmarks if a top-level project
+if (NOT CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+  set(BUILD_ACCURACY  OFF)
+  set(BUILD_BENCHMARK OFF)
+  set(BUILD_TESTS     OFF)
+endif()
 
 #
 # Test suite
 #
+if (BUILD_TESTS)
 enable_testing()
 include(GoogleTest)
 
@@ -44,6 +53,8 @@ add_executable(fpm-test
 set_target_properties(fpm-test PROPERTIES CXX_STANDARD 11)
 target_link_libraries(fpm-test PRIVATE fpm gtest_main)
 gtest_add_tests(TARGET fpm-test)
+
+endif()
 
 #
 # libfixmath for alternative comparison
@@ -217,4 +228,7 @@ endif()
 if (BUILD_BENCHMARK)
   add_subdirectory(3rdparty/googlebench)
 endif()
-add_subdirectory(3rdparty/googletest)
+
+if (BUILD_TESTS)
+  add_subdirectory(3rdparty/googletest)
+endif()
