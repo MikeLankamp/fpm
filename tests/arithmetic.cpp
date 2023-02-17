@@ -51,3 +51,27 @@ TEST(arithmethic, division_range)
     // wrong results without the intermediate type.
     EXPECT_EQ(P(32), P(256) / P(8));
 }
+
+TEST(arithmetic, multiplication_rounding)
+{
+    // Using 1 bit of fractional precision to test rounding
+    using Q_round = fpm::fixed<std::int32_t, std::int64_t, 1, true>;
+    using Q = fpm::fixed<std::int32_t, std::int64_t, 1, false>;
+
+    EXPECT_EQ(Q_round(1.0), Q_round(1.5) * Q_round(0.5));
+    EXPECT_EQ(Q_round(0.5), Q_round(0.5) * Q_round(0.5));
+    EXPECT_EQ(Q(0.5), Q(1.5) * Q(0.5));
+    EXPECT_EQ(Q(0.0), Q(0.5) * Q(0.5));
+}
+
+TEST(arithmetic, division_rounding)
+{
+    // Using 1 bit of fractional precision to test rounding
+    using Q_round = fpm::fixed<std::int32_t, std::int64_t, 1, true>;
+    using Q = fpm::fixed<std::int32_t, std::int64_t, 1, false>;
+
+    EXPECT_EQ(Q_round(2.5), Q_round(3.5) / Q_round(1.5));
+    EXPECT_EQ(Q_round(0.5), Q_round(1.0) / Q_round(1.5));
+    EXPECT_EQ(Q(2.0), Q(3.5) / Q(1.5));
+    EXPECT_EQ(Q(0.5), Q(1.0) / Q(1.5));
+}
