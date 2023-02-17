@@ -52,6 +52,19 @@ TEST(conversion, float_rounding)
     EXPECT_EQ(-1.5, static_cast<double>(Q{-1.375}));
 }
 
+TEST(conversion, float_no_rounding)
+{
+    // Small number of fraction bits to test no rounding
+    using Q = fpm::fixed<std::int32_t, std::int64_t, 2, false>;
+
+    EXPECT_EQ(1.0, static_cast<double>(Q{1.125}));
+    EXPECT_EQ(1.25, static_cast<double>(Q{1.375}));
+    EXPECT_EQ(1.25, static_cast<double>(Q{1.499}));
+    EXPECT_EQ(-1.0, static_cast<double>(Q{-1.125}));
+    EXPECT_EQ(-1.0, static_cast<double>(Q{-1.249}));
+    EXPECT_EQ(-1.25, static_cast<double>(Q{-1.375}));
+}
+
 TEST(conversion, ints)
 {
     EXPECT_EQ(-125, static_cast<int>(P{-125}));
@@ -74,6 +87,22 @@ TEST(conversion, fixed_point)
     // This should round up to 1
     EXPECT_EQ(P(-1), P::from_fixed_point<20>(-1048575));
     EXPECT_EQ(P(1), P::from_fixed_point<20>(1048575));
+}
+
+TEST(conversion, fixed_point_no_rounding)
+{
+    using P = fpm::fixed<std::int32_t, std::int64_t, 16, false>;
+    constexpr P epsilon = std::numeric_limits<P>::epsilon();
+
+    EXPECT_EQ(P(-1), P::from_fixed_point<0>(-1));
+    EXPECT_EQ(P(1), P::from_fixed_point<0>(1));
+
+    EXPECT_EQ(P(-1.125), P::from_fixed_point<4>(-18));
+    EXPECT_EQ(P(1.125), P::from_fixed_point<4>(18));
+
+    // This should NOT round up to 1: there will be a truncation error equal to epsilon
+    EXPECT_EQ(P(-1 + epsilon), P::from_fixed_point<20>(-1048575));
+    EXPECT_EQ(P(1 - epsilon), P::from_fixed_point<20>(1048575));
 }
 
 TEST(conversion, fixed_to_fixed)
