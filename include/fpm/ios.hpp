@@ -14,8 +14,8 @@
 namespace fpm
 {
 
-template <typename CharT, typename B, typename I, unsigned int F>
-std::basic_ostream<CharT>& operator<<(std::basic_ostream<CharT>& os, fixed<B, I, F> x) noexcept
+template <typename CharT, typename B, typename I, unsigned int F, bool R>
+std::basic_ostream<CharT>& operator<<(std::basic_ostream<CharT>& os, fixed<B, I, F, R> x) noexcept
 {
     const auto uppercase = ((os.flags() & std::ios_base::uppercase) != 0);
     const auto showpoint = ((os.flags() & std::ios_base::showpoint) != 0);
@@ -464,8 +464,8 @@ std::basic_ostream<CharT>& operator<<(std::basic_ostream<CharT>& os, fixed<B, I,
 }
 
 
-template <typename CharT, class Traits, typename B, typename I, unsigned int F>
-std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>& is, fixed<B, I, F>& x)
+template <typename CharT, class Traits, typename B, typename I, unsigned int F, bool R>
+std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>& is, fixed<B, I, F, R>& x)
 {
     typename std::basic_istream<CharT, Traits>::sentry sentry(is);
     if (!sentry)
@@ -545,7 +545,7 @@ std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>&
 
     if (i > 0) {
         if (i == 3 || i == 8) {
-            x = negate ? std::numeric_limits<fixed<B, I, F>>::min() : std::numeric_limits<fixed<B, I, F>>::max();
+            x = negate ? std::numeric_limits<fixed<B, I, F, R>>::min() : std::numeric_limits<fixed<B, I, F, R>>::max();
         } else {
             is.setstate(std::ios::failbit);
         }
@@ -644,13 +644,13 @@ std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>&
         // Absolute exponent is too large
         if (std::all_of(significand.begin(), significand.end(), [](unsigned char x){ return x == 0; })) {
             // Significand is zero. Exponent doesn't matter.
-            x = fixed<B, I, F>(0);
+            x = fixed<B, I, F, R>(0);
         } else if (exponent_negate) {
             // A huge negative exponent approaches 0.
-            x = fixed<B, I, F>::from_raw_value(0);
+            x = fixed<B, I, F, R>::from_raw_value(0);
         } else {
             // A huge positive exponent approaches infinity.
-            x = std::numeric_limits<fixed<B, I, F>>::max();
+            x = std::numeric_limits<fixed<B, I, F, R>>::max();
         }
         return is;
     }
@@ -680,7 +680,7 @@ std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>&
     for (std::size_t i = 0; i < fraction_start; ++i) {
         if (integer > MaxInt / base) {
             // Overflow
-            x = negate ? std::numeric_limits<fixed<B, I, F>>::min() : std::numeric_limits<fixed<B, I, F>>::max();
+            x = negate ? std::numeric_limits<fixed<B, I, F, R>>::min() : std::numeric_limits<fixed<B, I, F, R>>::max();
             return is;
         }
         assert(significand[i] < base);
@@ -724,14 +724,14 @@ std::basic_istream<CharT, Traits>& operator>>(std::basic_istream<CharT, Traits>&
             for (std::size_t e = 0; e < exponent; ++e) {
                 if (raw_value > MaxValue / 10) {
                     // Overflow
-                    x = negate ? std::numeric_limits<fixed<B, I, F>>::min() : std::numeric_limits<fixed<B, I, F>>::max();
+                    x = negate ? std::numeric_limits<fixed<B, I, F, R>>::min() : std::numeric_limits<fixed<B, I, F, R>>::max();
                     return is;
                 }
                 raw_value *= 10;
             }
         }
     }
-    x = fixed<B, I, F>::from_raw_value(static_cast<B>(negate ? -raw_value : raw_value));
+    x = fixed<B, I, F, R>::from_raw_value(static_cast<B>(negate ? -raw_value : raw_value));
     return is;
 }
 
