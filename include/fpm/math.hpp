@@ -543,7 +543,12 @@ fixed<B, I, F, R> sin(fixed<B, I, F, R> x) noexcept
 template <typename B, typename I, unsigned int F, bool R>
 inline fixed<B, I, F, R> cos(fixed<B, I, F, R> x) noexcept
 {
-    return sin(fixed<B, I, F, R>::half_pi() + x);
+    using Fixed = fixed<B, I, F>;
+    if (x > Fixed(0)) {  // Prevent an overflow due to the addition of π/2
+        return sin(x - (Fixed::two_pi() - Fixed::half_pi()));
+    } else {
+        return sin(Fixed::half_pi() + x);
+    }    
 }
 
 template <typename B, typename I, unsigned int F, bool R>
