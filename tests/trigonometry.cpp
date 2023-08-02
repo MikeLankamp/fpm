@@ -31,6 +31,21 @@ TEST(trigonometry, cos)
         auto cos_fixed = static_cast<double>(cos(P(flt_angle)));
         EXPECT_TRUE(HasMaximumError(cos_fixed, cos_real, MAX_ERROR_PERC));
     }
+
+    // Boundary-value analysis
+    // x = 2147380704 generates an overflow when calculating cos(x) = sin(x+π/2). Result: -0.9231 instead of 0.9279.
+    constexpr int32_t raw_values[] = {INT32_MIN, INT32_MAX, 2147380704 };
+
+    for (auto raw_value : raw_values)
+    {
+        constexpr auto MAX_ERROR_PERC = 0.0492;  // 4.92% = Maximum relative deviation over the value range of f_16_16
+        P angle_fixed = P::from_raw_value(raw_value);
+        auto angle_real = static_cast<double>(angle_fixed);
+        auto cos_fixed = static_cast<double>(cos(angle_fixed));
+        auto cos_real = std::cos(angle_real);
+        auto diff = std::abs(cos_fixed - cos_real);
+        EXPECT_TRUE(HasMaximumError(cos_fixed, cos_real, MAX_ERROR_PERC)) << ", raw_value=" << raw_value << ", error=" << std::abs(diff/cos_real)*100 << "%";
+    }
 }
 
 TEST(trigonometry, tan)
@@ -51,6 +66,20 @@ TEST(trigonometry, tan)
             auto tan_fixed = static_cast<double>(tan(P(flt_angle)));
             EXPECT_TRUE(HasMaximumError(tan_fixed, tan_real, MAX_ERROR_PERC));
         }
+    }
+
+    // Boundary-value analysis
+    // x = 2147380704 generates an overflow when calculating tan(x) with cos(x)=sin(x+π/2). cos(x) result: -0.9231 instead of 0.9279.
+    constexpr int32_t raw_values[] = {INT32_MIN, INT32_MAX, 2147380704 };
+    for (auto raw_value : raw_values)
+    {
+        constexpr auto MAX_ERROR_PERC = 0.0492;  // 4.92% = Maximum relative deviation over the value range of f_16_16
+        P angle_fixed = P::from_raw_value(raw_value);
+        auto angle_real = static_cast<double>(angle_fixed);
+        auto tan_fixed = static_cast<double>(tan(angle_fixed));
+        auto tan_real = std::tan(angle_real);
+        auto diff = std::abs(tan_fixed - tan_real);
+        EXPECT_TRUE(HasMaximumError(tan_fixed, tan_real, MAX_ERROR_PERC)) << ", raw_value=" << raw_value << ", error=" << std::abs(diff/tan_real)*100 << "%";
     }
 
 #ifndef NDEBUG
