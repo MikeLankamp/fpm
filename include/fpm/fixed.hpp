@@ -8,6 +8,12 @@
 #include <limits>
 #include <type_traits>
 
+#ifdef FPM_NO_EXPLICIT
+#   define FPM_EXPLICIT
+#else
+#   define FPM_EXPLICIT explicit
+#endif
+
 namespace fpm
 {
 
@@ -38,14 +44,14 @@ public:
     // Converts an integral number to the fixed-point type.
     // Like static_cast, this truncates bits that don't fit.
     template <typename T, typename std::enable_if<std::is_integral<T>::value>::type* = nullptr>
-    constexpr inline explicit fixed(T val) noexcept
+    constexpr inline FPM_EXPLICIT fixed(T val) noexcept
         : m_value(static_cast<BaseType>(val * FRACTION_MULT))
     {}
 
     // Converts an floating-point number to the fixed-point type.
     // Like static_cast, this truncates bits that don't fit.
     template <typename T, typename std::enable_if<std::is_floating_point<T>::value>::type* = nullptr>
-    constexpr inline explicit fixed(T val) noexcept
+    constexpr inline FPM_EXPLICIT fixed(T val) noexcept
         : m_value(static_cast<BaseType>((EnableRounding) ?
 		       (val >= 0.0) ? (val * FRACTION_MULT + T{0.5}) : (val * FRACTION_MULT - T{0.5})
 		      : (val * FRACTION_MULT)))
@@ -54,20 +60,20 @@ public:
     // Constructs from another fixed-point type with possibly different underlying representation.
     // Like static_cast, this truncates bits that don't fit.
     template <typename B, typename I, unsigned int F, bool R>
-    constexpr inline explicit fixed(fixed<B,I,F,R> val) noexcept
+    constexpr inline FPM_EXPLICIT fixed(fixed<B,I,F,R> val) noexcept
         : m_value(from_fixed_point<F>(val.raw_value()).raw_value())
     {}
 
-    // Explicit conversion to a floating-point type
+    // Conversion to a floating-point type
     template <typename T, typename std::enable_if<std::is_floating_point<T>::value>::type* = nullptr>
-    constexpr inline explicit operator T() const noexcept
+    constexpr inline FPM_EXPLICIT operator T() const noexcept
     {
         return static_cast<T>(m_value) / FRACTION_MULT;
     }
 
-    // Explicit conversion to an integral type
+    // Conversion to an integral type
     template <typename T, typename std::enable_if<std::is_integral<T>::value>::type* = nullptr>
-    constexpr inline explicit operator T() const noexcept
+    constexpr inline FPM_EXPLICIT operator T() const noexcept
     {
         return static_cast<T>(m_value / FRACTION_MULT);
     }

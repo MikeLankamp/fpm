@@ -76,6 +76,13 @@ You must still guard against underflow and overflow, though.
 `fpm::fixed<A, B, C>` can be constructed from an `fpm::fixed<D, E, F>` via explicit construction. This allows for conversion between fixed-point numbers of differing precision and range.
 Depending on the respective underlying types and number of fraction bits, this conversion may throw away high bits in the integral or low bits in the fraction.
 
+Explicit conversions can be disabled by defining FPM_NO_EXPLICIT before including `fixed.hpp`, as so:
+
+```c++
+#define FPM_NO_EXPLICIT
+#include <fpm/fixed.hpp>
+```
+
 ## Printing and reading fixed-point numbers
 The `<fpm/ios.hpp>` header provides streaming operators. Simply stream an expression of type `fpm::fixed` to or from a `std::ostream`.
 
