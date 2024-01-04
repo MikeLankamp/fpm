@@ -666,7 +666,10 @@ fixed<B, I, F, R> atan2(fixed<B, I, F, R> y, fixed<B, I, F, R> x) noexcept
     using Fixed = fixed<B, I, F, R>;
     if (x == Fixed(0))
     {
-        assert(y != Fixed(0));
+        if (y == Fixed(0))
+        {
+            return Fixed(0);
+        }
         return (y > Fixed(0)) ? Fixed::half_pi() : -Fixed::half_pi();
     }
 
