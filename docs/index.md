@@ -1,3 +1,6 @@
+---
+layout: default
+---
 # fpm
 A C++ header-only fixed-point math library. "fpm" stands for "fixed-point math".
 

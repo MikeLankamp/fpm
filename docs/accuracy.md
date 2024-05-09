@@ -1,3 +1,6 @@
+---
+layout: default
+---
 # Accuracy
 
 The images below compare the accuracy (versus the real result) of:

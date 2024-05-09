@@ -1,3 +1,6 @@
+---
+layout: default
+---
 # Performance
 
 The image below shows the approximate performance of:

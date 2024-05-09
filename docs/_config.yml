@@ -1,0 +1,10 @@
+title: FPM
+description: C++ header-only fixed-point math library
+theme: jekyll-theme-slate
+site:
+  github:
+    - is_project_page
+    - repository_url: https://github.com/MikeLankamp/fpm
+gems:
+  - jekyll-relative-links
+  - jekyll-github-metadata

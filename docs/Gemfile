@@ -1,0 +1,9 @@
+# frozen_string_literal: true
+
+source "https://rubygems.org"
+
+gem "github-pages"
+gem "jekyll-relative-links"
+gem "jekyll-github-metadata"
+
+gem "webrick", "~> 1.8"
