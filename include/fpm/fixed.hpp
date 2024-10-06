@@ -390,7 +390,7 @@ struct numeric_limits<fpm::fixed<B,I,F,R>>
     static constexpr std::float_denorm_style has_denorm = std::denorm_absent;
     static constexpr bool has_denorm_loss = false;
     static constexpr std::float_round_style round_style = std::round_to_nearest;
-    static constexpr bool is_iec_559 = false;
+    static constexpr bool is_iec559 = false;
     static constexpr bool is_bounded = true;
     static constexpr bool is_modulo = std::numeric_limits<B>::is_modulo;
     static constexpr int digits = std::numeric_limits<B>::digits;
@@ -459,7 +459,7 @@ constexpr bool numeric_limits<fpm::fixed<B,I,F,R>>::has_denorm_loss;
 template <typename B, typename I, unsigned int F, bool R>
 constexpr std::float_round_style numeric_limits<fpm::fixed<B,I,F,R>>::round_style;
 template <typename B, typename I, unsigned int F, bool R>
-constexpr bool numeric_limits<fpm::fixed<B,I,F,R>>::is_iec_559;
+constexpr bool numeric_limits<fpm::fixed<B,I,F,R>>::is_iec559;
 template <typename B, typename I, unsigned int F, bool R>
 constexpr bool numeric_limits<fpm::fixed<B,I,F,R>>::is_bounded;
 template <typename B, typename I, unsigned int F, bool R>
