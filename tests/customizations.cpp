@@ -98,7 +98,7 @@ TYPED_TEST(customizations, numeric_limits)
     EXPECT_EQ(L::has_denorm, std::denorm_absent);
     EXPECT_EQ(L::has_denorm_loss, false);
     EXPECT_EQ(L::round_style, std::round_to_nearest);
-    EXPECT_EQ(L::is_iec_559, false);
+    EXPECT_EQ(L::is_iec559, false);
     EXPECT_EQ(L::is_bounded, true);
     EXPECT_EQ(L::is_modulo, false);
     EXPECT_EQ(L::digits, TL::digits());
