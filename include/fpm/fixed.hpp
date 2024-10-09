@@ -487,4 +487,17 @@ constexpr bool numeric_limits<fpm::fixed<B,I,F,R>>::tinyness_before;
 
 }
 
+namespace fpm
+{
+template<typename T>
+struct is_fixed : std::false_type {};
+
+template<typename BaseType, typename IntermediateType, unsigned int FractionBits, bool EnableRounding>
+struct is_fixed<fixed<BaseType, IntermediateType, FractionBits, EnableRounding>> : std::true_type {};
+
+#if  __cplusplus >= 201703L
+template<typename T>
+inline constexpr bool is_fixed_v = is_fixed<T>::value;
+#endif
+}
 #endif
