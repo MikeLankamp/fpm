@@ -110,6 +110,42 @@ public:
         return fixed(value, raw_construct_tag{});
     }
 
+    //! Constructs a fixed-point number from integer part and fraction part.
+    //! \tparam NumFraction the fraction in \a fraction_value.
+    //! \param integer_value integer part
+    //! \param fraction_value fraction value
+    //!
+    //! Creating a fixed-point number from decimal parts:
+    //! \code
+    //! // Create a fixed-point number representing 3.141592 (π approximation)
+    //! // Using millionths as the fraction unit (denominator = 1,000,000)
+    //! auto pi = fpm::fixed_16_16::from_custom_fraction<1000000>(3, 141592);
+    //! // pi now represents 3.141592
+    //! \endcode
+    template <unsigned long long NumFraction, typename T, typename std::enable_if<(NumFraction > FRACTION_MULT)>::type* = nullptr>
+    static constexpr inline fixed from_custom_fraction(T integer_value, T fraction_value) noexcept
+    {
+        const IntermediateType int_part=integer_value * (T(1) << FractionBits);
+        const IntermediateType frac_part=static_cast<IntermediateType>(fraction_value) * FRACTION_MULT / static_cast<IntermediateType>(NumFraction);
+        const IntermediateType two_frac_part=static_cast<IntermediateType>(fraction_value) * FRACTION_MULT * 2 / static_cast<IntermediateType>(NumFraction);
+        // To correctly round the last bit in the result, we need one more bit of information.
+        // We do this by multiplying by two before dividing and adding the LSB to the real result.
+        return (EnableRounding)
+                   ? fixed(static_cast<BaseType>(int_part + frac_part + two_frac_part % 2),
+                           raw_construct_tag{})
+                   : fixed(static_cast<BaseType>(int_part + frac_part),
+                           raw_construct_tag{});
+    }
+
+    template <unsigned long long NumFraction, typename T, typename std::enable_if<(NumFraction <= FRACTION_MULT)>::type* = nullptr>
+    static constexpr inline fixed from_custom_fraction(T integer_value, T fraction_value) noexcept
+    {
+        const IntermediateType int_part=integer_value * (T(1) << FractionBits);
+        const IntermediateType frac_part=static_cast<IntermediateType>(fraction_value) * FRACTION_MULT / static_cast<IntermediateType>(NumFraction);
+
+        return fixed(static_cast<BaseType>(int_part + frac_part),
+                           raw_construct_tag{});
+    }
     //
     // Constants
     //
