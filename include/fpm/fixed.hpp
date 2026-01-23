@@ -76,7 +76,7 @@ public:
     // Do not use this unless you know what you're doing.
     constexpr inline BaseType raw_value() const noexcept
     {
-        return m_value{};
+        return m_value;
     }
 
     //! Constructs a fixed-point number from another fixed-point number.
@@ -199,13 +199,13 @@ public:
     }
 
 
-    inline operator bool() noexcept
+    constexpr inline operator bool() noexcept
     {
         return m_value != 0;
     }
 
 private:
-    BaseType m_value;
+    BaseType m_value{};
 };
 
 //
