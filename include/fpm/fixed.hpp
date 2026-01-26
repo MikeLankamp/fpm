@@ -125,9 +125,9 @@ public:
     template <unsigned long long NumFraction, typename T, typename std::enable_if<(NumFraction > FRACTION_MULT)>::type* = nullptr>
     static constexpr inline fixed from_custom_fraction(T integer_value, T fraction_value) noexcept
     {
-        const IntermediateType int_part=integer_value * (T(1) << FractionBits);
-        const IntermediateType frac_part=static_cast<IntermediateType>(fraction_value) * FRACTION_MULT / static_cast<IntermediateType>(NumFraction);
-        const IntermediateType two_frac_part=static_cast<IntermediateType>(fraction_value) * FRACTION_MULT * 2 / static_cast<IntermediateType>(NumFraction);
+        const IntermediateType int_part = integer_value * (T(1) << FractionBits);
+        const IntermediateType frac_part = static_cast<IntermediateType>(fraction_value) * FRACTION_MULT / static_cast<IntermediateType>(NumFraction);
+        const IntermediateType two_frac_part = static_cast<IntermediateType>(fraction_value) * FRACTION_MULT * 2 / static_cast<IntermediateType>(NumFraction);
         // To correctly round the last bit in the result, we need one more bit of information.
         // We do this by multiplying by two before dividing and adding the LSB to the real result.
         return (EnableRounding)

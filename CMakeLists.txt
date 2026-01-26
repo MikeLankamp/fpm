@@ -43,6 +43,7 @@ add_executable(fpm-test
   tests/classification.cpp
   tests/customizations.cpp
   tests/detail.cpp
+  tests/from.cpp
   tests/input.cpp
   tests/manip.cpp
   tests/nearest.cpp
