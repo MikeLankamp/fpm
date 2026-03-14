@@ -194,6 +194,7 @@ public:
     template <typename I, typename std::enable_if<std::is_integral<I>::value>::type* = nullptr>
     inline fixed& operator/=(I y) noexcept
     {
+        assert(y != 0);
         m_value /= y;
         return *this;
     }
