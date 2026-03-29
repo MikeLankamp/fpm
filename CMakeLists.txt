@@ -55,6 +55,28 @@ set_target_properties(fpm-test PROPERTIES CXX_STANDARD 11)
 target_link_libraries(fpm-test PRIVATE fpm gtest_main)
 gtest_add_tests(TARGET fpm-test)
 
+add_executable(fpm-test20
+  #tests/arithmetic.cpp
+  #tests/arithmetic_int.cpp
+  #tests/basic_math.cpp
+  #tests/constants.cpp
+  #tests/conversion.cpp
+  #tests/classification.cpp
+  #tests/customizations.cpp
+  #tests/detail.cpp
+  #tests/input.cpp
+  #tests/manip.cpp
+  #tests/nearest.cpp
+  #tests/output.cpp
+  #tests/power.cpp
+  #tests/trigonometry.cpp
+  tests/formatting.cpp
+  tests/formatting_wchar.cpp
+)
+set_target_properties(fpm-test20 PROPERTIES CXX_STANDARD 20)
+target_link_libraries(fpm-test20 PRIVATE fpm gtest_main)
+gtest_add_tests(TARGET fpm-test20 TEST_SUFFIX .cpp20)
+
 endif()
 
 #
