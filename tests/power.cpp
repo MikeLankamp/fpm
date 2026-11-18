@@ -33,6 +33,36 @@ TEST(power, exp2)
     }
 }
 
+TEST(power, exp_large_negative)
+{
+    // The result is only a few LSB here, but 1 / exp(-x) does not fit on the way
+    using P = fpm::fixed_16_16;
+    constexpr auto MAX_ERROR = 2.0 / 65536;
+
+    for (double value = -40; value <= -5; value += 0.25)
+    {
+        auto exp_real = std::exp(value);
+        auto exp_fixed = static_cast<double>(exp(P(value)));
+        EXPECT_NEAR(exp_fixed, exp_real, MAX_ERROR) << "exp(" << value << ")";
+    }
+    EXPECT_EQ(P(0), exp(std::numeric_limits<P>::min()));
+}
+
+TEST(power, exp2_large_negative)
+{
+    // The result is only a few LSB here, but 1 / exp2(-x) does not fit on the way
+    using P = fpm::fixed_16_16;
+    constexpr auto MAX_ERROR = 1.0 / 65536;
+
+    for (double value = -40; value <= -5; value += 0.25)
+    {
+        auto exp_real = std::exp2(value);
+        auto exp_fixed = static_cast<double>(exp2(P(value)));
+        EXPECT_NEAR(exp_fixed, exp_real, MAX_ERROR) << "exp2(" << value << ")";
+    }
+    EXPECT_EQ(P(0), exp2(std::numeric_limits<P>::min()));
+}
+
 TEST(power, expm1)
 {
     // For several values, verify that fpm::expm1 is close to std::expm1.

@@ -315,11 +315,19 @@ template <typename B, typename I, unsigned int F, bool R>
 fixed<B, I, F, R> exp(fixed<B, I, F, R> x) noexcept
 {
     using Fixed = fixed<B, I, F, R>;
-    if (x < Fixed(0)) {
+    // 1 / exp(-x) is used while exp(-x) fits with room to spare. Further down it would
+    // overflow even though exp(x) itself is still representable, so the integer part is
+    // then taken as a power of 1 / e, which only gets smaller.
+    constexpr auto ln_2 = Fixed::template from_fixed_point<63>(6393154322601327830ll); // 6.9314718055994531e-1
+    if (x < Fixed(0) && x > Fixed(-(std::numeric_limits<B>::digits - int(F) - 1)) * ln_2) {
         return 1 / exp(-x);
     }
     constexpr auto FRAC = B(1) << F;
-    const B x_int = x.raw_value() / FRAC;
+    // Round the integer part down, so that the fraction is in [0, 1) for negative x too
+    B x_int = x.raw_value() / FRAC;
+    if (x.raw_value() % FRAC < 0) {
+        --x_int;
+    }
     x -= x_int;
     assert(x >= Fixed(0) && x < Fixed(1));
 
@@ -329,18 +337,30 @@ fixed<B, I, F, R> exp(fixed<B, I, F, R> x) noexcept
     constexpr auto fD = Fixed::template from_fixed_point<63>(4603349000587966862ll); // 4.9909609871464493e-1
     constexpr auto fE = Fixed::template from_fixed_point<62>(4612052447974689712ll); // 1.0000794567422495
     constexpr auto fF = Fixed::template from_fixed_point<63>(9223361618412247875ll); // 9.9999887043019773e-1
-    return pow(Fixed::e(), x_int) * (((((fA * x + fB) * x + fC) * x + fD) * x + fE) * x + fF);
+    const Fixed frac_exp = (((((fA * x + fB) * x + fC) * x + fD) * x + fE) * x + fF);
+    if (x_int >= 0) {
+        return pow(Fixed::e(), x_int) * frac_exp;
+    }
+    constexpr auto inv_e = Fixed::template from_fixed_point<63>(3393088950634442637ll); // 3.6787944117144232e-1
+    return pow(inv_e, -x_int) * frac_exp;
 }
 
 template <typename B, typename I, unsigned int F, bool R>
 fixed<B, I, F, R> exp2(fixed<B, I, F, R> x) noexcept
 {
     using Fixed = fixed<B, I, F, R>;
-    if (x < Fixed(0)) {
+    // 1 / exp2(-x) is used while exp2(-x) fits with room to spare. Further down it would
+    // overflow even though exp2(x) itself is still representable, so the negative power
+    // of two is then applied as a right shift.
+    if (x < Fixed(0) && x > Fixed(-(std::numeric_limits<B>::digits - int(F) - 1))) {
         return 1 / exp2(-x);
     }
     constexpr auto FRAC = B(1) << F;
-    const B x_int = x.raw_value() / FRAC;
+    // Round the integer part down, so that the fraction is in [0, 1) for negative x too
+    B x_int = x.raw_value() / FRAC;
+    if (x.raw_value() % FRAC < 0) {
+        --x_int;
+    }
     x -= x_int;
     assert(x >= Fixed(0) && x < Fixed(1));
 
@@ -350,7 +370,16 @@ fixed<B, I, F, R> exp2(fixed<B, I, F, R> x) noexcept
     constexpr auto fD = Fixed::template from_fixed_point<63>(2214897896212987987ll); // 2.4013971109076949e-1
     constexpr auto fE = Fixed::template from_fixed_point<63>(6393224161192452326ll); // 6.9315475247516736e-1
     constexpr auto fF = Fixed::template from_fixed_point<63>(9223371050976163566ll); // 9.9999989311082668e-1
-    return Fixed(1 << x_int) * (((((fA * x + fB) * x + fC) * x + fD) * x + fE) * x + fF);
+    const Fixed frac_pow = (((((fA * x + fB) * x + fC) * x + fD) * x + fE) * x + fF);
+    if (x_int >= 0) {
+        return Fixed(1 << x_int) * frac_pow;
+    }
+    const B shift = -x_int;
+    if (shift >= std::numeric_limits<B>::digits) {
+        return Fixed(0);
+    }
+    const B half = R ? (B(1) << (shift - 1)) : B(0);
+    return Fixed::from_raw_value((frac_pow.raw_value() + half) >> shift);
 }
 
 template <typename B, typename I, unsigned int F, bool R>
